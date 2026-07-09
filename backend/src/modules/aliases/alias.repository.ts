@@ -1,0 +1,45 @@
+import { db } from "../../db";
+import { aliases } from "../../db/schema";
+import type { Alias } from "@prismel/shared";
+import { eq } from "drizzle-orm";
+
+export const aliasRepository = {
+  findAll(): Alias[] {
+    return db.select().from(aliases).all() as Alias[];
+  },
+
+  findById(id: string): Alias | undefined {
+    return db.select().from(aliases).where(eq(aliases.id, id)).get() as Alias | undefined;
+  },
+
+  findByEmail(email: string): Alias | undefined {
+    return db.select().from(aliases).where(eq(aliases.email, email)).get() as Alias | undefined;
+  },
+
+  search(query: string): Alias[] {
+    return db
+      .select()
+      .from(aliases)
+      .where(eq(aliases.email, query))
+      .all() as Alias[];
+  },
+
+  create(alias: Alias): Alias {
+    db.insert(aliases).values(alias).run();
+    return alias;
+  },
+
+  update(id: string, data: Partial<Alias>): Alias | undefined {
+    db.update(aliases).set(data).where(eq(aliases.id, id)).run();
+    return this.findById(id);
+  },
+
+  delete(id: string): boolean {
+    const result = db.delete(aliases).where(eq(aliases.id, id)).run();
+    return result.changes > 0;
+  },
+
+  findByProviderId(providerId: string): Alias | undefined {
+    return db.select().from(aliases).where(eq(aliases.providerId, providerId)).get() as Alias | undefined;
+  },
+};

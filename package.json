@@ -1,0 +1,25 @@
+{
+  "name": "prismel",
+  "private": true,
+  "workspaces": [
+    "shared",
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "npm run dev:backend & npm run dev:frontend & wait",
+    "dev:backend": "npm run dev -w @prismel/backend",
+    "dev:frontend": "npm run dev -w @prismel/frontend",
+    "build": "npm run build --workspaces --if-present",
+    "build:shared": "npm run build -w @prismel/shared",
+    "build:backend": "npm run build -w @prismel/backend",
+    "build:frontend": "npm run build -w @prismel/frontend",
+    "lint": "npm run lint --workspaces --if-present",
+    "db:generate": "npm run db:generate -w @prismel/backend",
+    "db:migrate": "npm run db:migrate -w @prismel/backend",
+    "db:push": "npm run db:push -w @prismel/backend"
+  },
+  "devDependencies": {
+    "drizzle-orm": "^0.45.2"
+  }
+}
