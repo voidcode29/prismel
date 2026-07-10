@@ -62,11 +62,35 @@ export const aliasController = {
   },
 
   async sync(_req: Request, res: Response) {
+    res.writeHead(200, {
+      "Content-Type": "application/x-ndjson",
+      "Cache-Control": "no-cache",
+      "X-Accel-Buffering": "no",
+    });
+
     try {
-      const result = await aliasService.sync();
-      res.json(result);
+      const result = await aliasService.sync((line: string) => {
+        res.write(JSON.stringify({ type: "log", message: line }) + "\n");
+      });
+
+      res.write(
+        JSON.stringify({
+          type: "result",
+          data: {
+            new: result.new,
+            updated: result.updated,
+            total: result.total,
+            errors: result.errors,
+            logs: result.logs,
+          },
+        }) + "\n"
+      );
     } catch (error) {
-      res.status(500).json({ error: (error as Error).message });
+      res.write(
+        JSON.stringify({ type: "error", message: (error as Error).message }) +
+          "\n"
+      );
     }
+    res.end();
   },
 };

@@ -6,6 +6,7 @@ export const aliases = sqliteTable("aliases", {
   provider: text("provider").notNull().default("ovh"),
   providerId: text("provider_id").notNull(),
   domain: text("domain").notNull(),
+  destination: text("destination"),
   serviceName: text("service_name"),
   description: text("description"),
   tags: text("tags", { mode: "json" }).$type<string[]>().default([]),

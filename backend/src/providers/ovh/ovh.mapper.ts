@@ -1,22 +1,23 @@
 import crypto from "crypto";
 import type { Alias } from "@prismel/shared";
 
-export interface OvhAliasResponse {
-  id: string;
-  domain: string;
-  destination: string;
-  account: string;
+export interface OvhRedirection {
+  id: number;
+  from: string;
+  to: string;
 }
 
-export function mapOvhAliasToInternal(ovh: OvhAliasResponse): Alias {
+export function mapRedirectionToAlias(domain: string, redir: OvhRedirection): Alias {
+  const now = new Date().toISOString();
   return {
     id: crypto.randomUUID(),
-    email: `${ovh.account}@${ovh.domain}`,
+    email: redir.from,
     provider: "ovh",
-    providerId: ovh.id,
-    domain: ovh.domain,
+    providerId: String(redir.id),
+    domain,
+    destination: redir.to,
     tags: [],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt: now,
+    updatedAt: now,
   };
 }

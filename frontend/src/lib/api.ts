@@ -1,4 +1,4 @@
-import type { Alias, CreateAliasInput, UpdateAliasInput, GeneratedAlias } from "@prismel/shared";
+import type { Alias, CreateAliasInput, UpdateAliasInput, GeneratedAlias, SyncResult } from "@prismel/shared";
 
 const API_BASE = "/api";
 
@@ -41,5 +41,5 @@ export const api = {
     }),
 
   sync: () =>
-    request<{ synced: number }>("/aliases/sync", { method: "POST" }),
+    request<SyncResult>("/aliases/sync", { method: "POST" }),
 };

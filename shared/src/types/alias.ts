@@ -4,6 +4,7 @@ export interface Alias {
   provider: "ovh";
   providerId: string;
   domain: string;
+  destination?: string;
   serviceName?: string;
   description?: string;
   tags: string[];
@@ -15,6 +16,7 @@ export interface Alias {
 export interface CreateAliasInput {
   email: string;
   domain: string;
+  destination?: string;
   serviceName?: string;
   description?: string;
   tags?: string[];
@@ -31,4 +33,12 @@ export interface GeneratedAlias {
   prefix: string;
   domain: string;
   email: string;
+}
+
+export interface SyncResult {
+  new: number;
+  updated: number;
+  total: number;
+  errors: string[];
+  logs: string[];
 }
