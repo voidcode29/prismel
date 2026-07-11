@@ -8,11 +8,16 @@ import {
   validateGenerateAlias,
 } from "./validators/alias.validator";
 import { errorHandler } from "./middleware/errorHandler";
+import { settingsController } from "./modules/settings/settings.controller";
+import { settingsService } from "./modules/settings/settings.service";
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// Seed settings from .env on first startup
+settingsService.seedFromEnv();
 
 // Alias routes
 app.get("/api/aliases", aliasController.getAll);
@@ -22,6 +27,10 @@ app.put("/api/aliases/:id", validateUpdateAlias, aliasController.update);
 app.delete("/api/aliases/:id", aliasController.delete);
 app.post("/api/aliases/generate", validateGenerateAlias, aliasController.generate);
 app.post("/api/aliases/sync", aliasController.sync);
+
+// Settings routes
+app.get("/api/settings", settingsController.getAll);
+app.put("/api/settings", settingsController.update);
 
 // Error handler
 app.use(errorHandler);

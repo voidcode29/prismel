@@ -196,6 +196,10 @@ Exemple :
 
   providerId: string,
 
+  domain: string,
+
+  destination?: string,
+
   serviceName?: string,
 
   description?: string,
@@ -209,6 +213,8 @@ Exemple :
   lastSyncAt?: Date
 }
 ```
+
+Le champ `destination` contient l'adresse vers laquelle l'alias redirige (pertinent pour les redirections OVH, champ `to`).
 
 Les informations métier restent locales.
 
@@ -246,6 +252,37 @@ Responsabilités :
 * transformer les données fournisseur vers le modèle interne
 
 Ajouter un nouveau fournisseur ne doit pas modifier la logique métier principale.
+
+## Mapping domaine → fournisseur
+
+La correspondance entre un domaine et son fournisseur est déclarée dans `shared/src/constants/domains.ts` via `DOMAIN_PROVIDERS` :
+
+```ts
+export const DOMAIN_PROVIDERS: Record<string, string> = {
+  "tical.fr": "ovh",
+};
+```
+
+Les domaines sans fournisseur configuré sont ignorés silencieusement par la synchronisation.
+
+La logique d'orchestration (alias.service.ts) ne contient jamais de référence codée en dur à un fournisseur spécifique.
+
+Elle utilise le mapping pour router chaque domaine vers le bon provider.
+
+## Spécificité OVH
+
+OVH utilise l'API de redirections email (pas les alias de compte MX Plan).
+
+Endpoints :
+
+* `GET    /email/domain/{domain}/redirection` — liste les IDs
+* `GET    /email/domain/{domain}/redirection/{id}` — détail `{id, from, to}`
+* `POST   /email/domain/{domain}/redirection` — crée `{from, to, localCopy}`
+* `DELETE /email/domain/{domain}/redirection/{id}` — supprime
+
+Le `from` correspond à l'alias email. Le `to` correspond à la destination.
+
+Le `providerId` stocké est l'ID numérique OVH sous forme de string.
 
 ---
 
@@ -365,6 +402,22 @@ Exemples :
 * synchronisation après modification
 * synchronisation future planifiée
 
+## Streaming
+
+L'endpoint `POST /api/aliases/sync` répond en NDJSON (newline-delimited JSON).
+
+Chaque ligne est un objet JSON suivi de `\n` :
+
+```json
+{"type":"log","message":"┌─ Domain: tical.fr"}
+{"type":"log","message":"│  [1/67] + NEW  #12345  alias@domain.fr → dest@mail.com"}
+{"type":"result","data":{"new":67,"updated":0,"total":67,"errors":[],"logs":["..."]}}
+```
+
+Le frontend lit le flux en temps réel avec `response.body.getReader()` et affiche les logs ligne par ligne.
+
+## Gestion des erreurs
+
 Différencier :
 
 ```
@@ -374,6 +427,8 @@ Erreur base locale
 ≠
 Erreur validation utilisateur
 ```
+
+Les domaines sans fournisseur configuré sont ignorés sans erreur. Seuls les échecs réels d'API comptent comme erreurs.
 
 ---
 
@@ -424,3 +479,6 @@ Recherche possible par :
 * Toute génération d'alias passe par `alias.generator.ts`.
 * Le frontend ne contient aucune logique métier critique.
 * Le backend est la seule source d'orchestration.
+* Les noms de fournisseurs ne sont jamais codés en dur dans la logique d'orchestration.
+* La correspondance domaine → fournisseur est centralisée dans `DOMAIN_PROVIDERS`.
+* Les logs de synchronisation ne mentionnent pas de fournisseur spécifique (ex. éviter « pas géré par OVH »).

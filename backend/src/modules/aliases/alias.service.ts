@@ -3,7 +3,7 @@ import { OvhClient } from "../../providers/ovh/ovh.client";
 import { mapRedirectionToAlias, type OvhRedirection } from "../../providers/ovh/ovh.mapper";
 import type { Alias, CreateAliasInput, UpdateAliasInput, GeneratedAlias, SyncResult } from "@prismel/shared";
 import { generateAlias, isDomainValid } from "./alias.generator";
-import { ALIAS_DOMAINS } from "@prismel/shared";
+import { ALIAS_DOMAINS, DOMAIN_PROVIDERS } from "@prismel/shared";
 import crypto from "crypto";
 
 const ovhClient = new OvhClient();
@@ -100,8 +100,26 @@ export const aliasService = {
 
     for (const domain of ALIAS_DOMAINS) {
       const domainStart = Date.now();
-      const domainNew = result.new;
+      const provider = DOMAIN_PROVIDERS[domain];
+
       log(`┌─ Domain: ${domain}`);
+      log(`│  Provider: ${provider || "none"}`);
+
+      if (!provider) {
+        log(`│  → No provider configured for this domain — skipped`);
+        log(`└─ Skipped`);
+        log("");
+        continue;
+      }
+
+      if (provider !== "ovh") {
+        log(`│  → Provider "${provider}" not yet implemented — skipped`);
+        log(`└─ Skipped`);
+        log("");
+        continue;
+      }
+
+      // OVH provider sync
       log(`│  Endpoint: /email/domain/${domain}/redirection`);
 
       try {
@@ -171,15 +189,10 @@ export const aliasService = {
         log(`└─ Done (${domainTime}s)`);
         log("");
       } catch (e) {
-        const msg = (e as Error).message;
-        if (msg.includes("404") || msg.includes("Not Found")) {
-          log(`│  → Domain not managed by OVH — skipped`);
-          log(`└─ Skipped`);
-        } else {
-          result.errors.push(`Failed to list redirections: ${msg}`);
-          log(`│  ✗ Failed to list redirections: ${msg}`);
-          log(`└─ Failed`);
-        }
+        const msg = `Failed to list redirections: ${(e as Error).message}`;
+        result.errors.push(msg);
+        log(`│  ✗ ${msg}`);
+        log(`└─ Failed`);
         log("");
       }
     }

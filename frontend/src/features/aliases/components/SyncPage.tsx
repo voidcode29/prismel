@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import type { Alias, SyncResult } from "@prismel/shared";
+import type { Alias } from "@prismel/shared";
 import {
   RefreshCw,
   CheckCircle2,
@@ -11,14 +11,13 @@ import {
   Terminal,
 } from "lucide-react";
 import { api } from "../../../lib/api";
+import { useSync } from "../SyncContext";
 
 export function SyncPage() {
+  const { syncing, logs, result, error, startSync } = useSync();
   const [aliases, setAliases] = useState<Alias[]>([]);
   const [loading, setLoading] = useState(true);
-  const [syncing, setSyncing] = useState(false);
-  const [logs, setLogs] = useState<string[]>([]);
-  const [result, setResult] = useState<SyncResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const logsRef = useRef<HTMLDivElement>(null);
 
   const fetchAliases = async () => {
@@ -26,7 +25,7 @@ export function SyncPage() {
       const data = await api.getAliases();
       setAliases(data);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to load aliases");
+      setFetchError(e instanceof Error ? e.message : "Failed to load aliases");
     } finally {
       setLoading(false);
     }
@@ -36,60 +35,18 @@ export function SyncPage() {
     fetchAliases();
   }, []);
 
+  // Refresh alias count when sync completes
+  useEffect(() => {
+    if (result) {
+      fetchAliases();
+    }
+  }, [result]);
+
   useEffect(() => {
     if (logsRef.current) {
       logsRef.current.scrollTop = logsRef.current.scrollHeight;
     }
   }, [logs]);
-
-  const handleSync = async () => {
-    setSyncing(true);
-    setError(null);
-    setResult(null);
-    setLogs([]);
-
-    try {
-      const response = await fetch("/api/aliases/sync", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      const reader = response.body!.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        buffer += decoder.decode(value, { stream: !done });
-
-        const lines = buffer.split("\n");
-        buffer = lines.pop() || "";
-
-        for (const line of lines) {
-          if (!line.trim()) continue;
-          try {
-            const event = JSON.parse(line);
-            if (event.type === "log") {
-              setLogs((prev) => [...prev, event.message]);
-            } else if (event.type === "result") {
-              setResult(event.data);
-              await fetchAliases();
-            } else if (event.type === "error") {
-              setError(event.message);
-            }
-          } catch {
-            // skip unparseable lines
-          }
-        }
-
-        if (done) break;
-      }
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Sync failed");
-    } finally {
-      setSyncing(false);
-    }
-  };
 
   return (
     <div>
@@ -136,7 +93,7 @@ export function SyncPage() {
       {/* Sync Button */}
       <div className="flex items-center justify-center mb-8">
         <button
-          onClick={handleSync}
+          onClick={startSync}
           disabled={syncing}
           className="px-8 py-4 bg-indigo-600 text-white rounded-xl text-base font-semibold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/25 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-3"
         >
@@ -155,13 +112,13 @@ export function SyncPage() {
       </div>
 
       {/* Error State */}
-      {error && (
+      {(error || fetchError) && (
         <div className="bg-red-50 border border-red-200 rounded-xl p-5 mb-8">
           <div className="flex items-start gap-3">
             <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
             <div>
-              <p className="text-sm font-semibold text-red-800">Sync failed</p>
-              <p className="text-sm text-red-700 mt-1">{error}</p>
+              <p className="text-sm font-semibold text-red-800">Error</p>
+              <p className="text-sm text-red-700 mt-1">{error || fetchError}</p>
             </div>
           </div>
         </div>
@@ -173,13 +130,10 @@ export function SyncPage() {
           <div className="flex items-center gap-2 mb-4">
             <CheckCircle2 className="w-5 h-5 text-emerald-600" />
             <span className="text-sm font-semibold text-slate-900">Sync complete</span>
-            <span className="text-sm text-slate-500">
-              {result.total} total aliases
-            </span>
+            <span className="text-sm text-slate-500">{result.total} total aliases</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {/* New */}
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center">
@@ -189,8 +143,6 @@ export function SyncPage() {
               </div>
               <div className="text-3xl font-bold text-emerald-600">{result.new}</div>
             </div>
-
-            {/* Updated */}
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 bg-amber-50 rounded-lg flex items-center justify-center">
@@ -200,8 +152,6 @@ export function SyncPage() {
               </div>
               <div className="text-3xl font-bold text-amber-600">{result.updated}</div>
             </div>
-
-            {/* Total */}
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center">
@@ -213,7 +163,6 @@ export function SyncPage() {
             </div>
           </div>
 
-          {/* Errors */}
           {result.errors.length > 0 && (
             <div className="bg-red-50 border border-red-200 rounded-xl p-5">
               <div className="flex items-start gap-3 mb-3">
@@ -226,10 +175,7 @@ export function SyncPage() {
               </div>
               <ul className="space-y-2 mt-2">
                 {result.errors.map((err, i) => (
-                  <li
-                    key={i}
-                    className="flex items-start gap-2 text-sm text-red-700 bg-red-100/50 rounded-lg px-3 py-2"
-                  >
+                  <li key={i} className="flex items-start gap-2 text-sm text-red-700 bg-red-100/50 rounded-lg px-3 py-2">
                     <ArrowRight className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                     {err}
                   </li>
@@ -245,9 +191,7 @@ export function SyncPage() {
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
           <div className="flex items-center gap-2 mb-3">
             <Terminal className="w-4 h-4 text-slate-500" />
-            <h3 className="text-sm font-semibold text-slate-900">
-              {syncing ? "Sync Log" : "Sync Log"}
-            </h3>
+            <h3 className="text-sm font-semibold text-slate-900">Sync Log</h3>
             {syncing && (
               <span className="text-xs text-slate-400 ml-auto">Streaming...</span>
             )}

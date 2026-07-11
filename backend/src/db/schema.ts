@@ -14,3 +14,8 @@ export const aliases = sqliteTable("aliases", {
   updatedAt: text("updated_at").notNull(),
   lastSyncAt: text("last_sync_at"),
 });
+
+export const settings = sqliteTable("settings", {
+  key: text("key").primaryKey(),
+  value: text("value").notNull(),
+});

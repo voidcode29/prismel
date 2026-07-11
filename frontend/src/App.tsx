@@ -2,6 +2,8 @@ import { Routes, Route, Link, useLocation } from "react-router-dom";
 import { Mail, Bell } from "lucide-react";
 import { AliasListPage } from "./features/aliases/components/AliasListPage";
 import { SyncPage } from "./features/aliases/components/SyncPage";
+import { SettingsPage } from "./features/settings/SettingsPage";
+import { SyncProvider } from "./features/aliases/SyncContext";
 
 function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
   const location = useLocation();
@@ -49,11 +51,14 @@ export function App() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Routes>
-          <Route path="/" element={<AliasListPage />} />
-          <Route path="/aliases" element={<AliasListPage />} />
-          <Route path="/sync" element={<SyncPage />} />
-        </Routes>
+        <SyncProvider>
+          <Routes>
+            <Route path="/" element={<AliasListPage />} />
+            <Route path="/aliases" element={<AliasListPage />} />
+            <Route path="/sync" element={<SyncPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+          </Routes>
+        </SyncProvider>
       </main>
     </div>
   );
