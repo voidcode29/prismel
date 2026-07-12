@@ -1,5 +1,4 @@
 import { Routes, Route, Link, useLocation } from "react-router-dom";
-import { Bell } from "lucide-react";
 import { Logo } from "./components/Logo";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { AliasListPage } from "./features/aliases/components/AliasListPage";
@@ -40,12 +39,6 @@ export function App() {
           </nav>
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <button className="p-2 text-solaris-400 dark:text-solaris-500 hover:text-solaris-600 dark:hover:text-solaris-300 rounded-lg hover:bg-solaris-200 dark:hover:bg-solaris-800 transition-colors">
-              <Bell className="w-5 h-5" />
-            </button>
-            <div className="w-8 h-8 bg-gradient-to-br from-solaris-blue-400 to-solaris-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-              TD
-            </div>
           </div>
         </div>
       </header>
