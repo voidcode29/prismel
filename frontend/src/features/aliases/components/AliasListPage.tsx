@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import type { Alias } from "@prismel/shared";
 import {
   Mail,
@@ -10,6 +10,8 @@ import {
   Globe,
   CheckCircle2,
   Tag,
+  Copy,
+  Check,
 } from "lucide-react";
 import { api } from "../../../lib/api";
 import { QuickGenerateModal } from "./QuickGenerateModal";
@@ -92,6 +94,28 @@ export function AliasListPage() {
   const [aliasToDelete, setAliasToDelete] = useState<Alias | null>(null);
   const [aliasToEdit, setAliasToEdit] = useState<Alias | null>(null);
   const [formModalVisible, setFormModalVisible] = useState(true);
+  const [sortKey, setSortKey] = useState<keyof Alias | null>("createdAt");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(50);
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  const loadMore = useCallback(() => {
+    setVisibleCount((prev) => Math.min(prev + 50, aliases.length));
+  }, [aliases.length]);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) loadMore();
+      },
+      { rootMargin: "200px" }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [loadMore]);
 
   const fetchAliases = async () => {
     setLoading(true);
@@ -120,6 +144,68 @@ export function AliasListPage() {
         a.tags.some((t) => t.toLowerCase().includes(q))
     );
   }, [aliases, searchQuery]);
+
+  const displayedAliases = useMemo(() => {
+    if (!sortKey) return filteredAliases;
+    const sorted = [...filteredAliases];
+    sorted.sort((a, b) => {
+      let va: string | number = "";
+      let vb: string | number = "";
+      switch (sortKey) {
+        case "email":
+          va = a.email.toLowerCase();
+          vb = b.email.toLowerCase();
+          break;
+        case "serviceName":
+          va = (a.serviceName || "").toLowerCase();
+          vb = (b.serviceName || "").toLowerCase();
+          break;
+        case "tags":
+          va = a.tags.length;
+          vb = b.tags.length;
+          break;
+        case "domain":
+          va = a.domain.toLowerCase();
+          vb = b.domain.toLowerCase();
+          break;
+        case "createdAt":
+          va = a.createdAt;
+          vb = b.createdAt;
+          break;
+        case "updatedAt":
+          va = a.updatedAt;
+          vb = b.updatedAt;
+          break;
+        default:
+          return 0;
+      }
+      if (va < vb) return sortDir === "asc" ? -1 : 1;
+      if (va > vb) return sortDir === "asc" ? 1 : -1;
+      return 0;
+    });
+    return sorted;
+  }, [filteredAliases, sortKey, sortDir]);
+
+  const handleSort = (key: keyof Alias) => {
+    if (sortKey === key) {
+      setSortDir((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir("asc");
+    }
+  };
+
+  const handleCopy = (e: React.MouseEvent, email: string, id: string) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(email);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  function SortArrow({ column }: { column: keyof Alias }) {
+    if (sortKey !== column) return <span className="ml-1 opacity-30">↕</span>;
+    return <span className="ml-1">{sortDir === "asc" ? "↑" : "↓"}</span>;
+  }
 
   const stats = useMemo(() => {
     const domains = new Set(aliases.map((a) => a.domain));
@@ -303,15 +389,16 @@ export function AliasListPage() {
             <table className="w-full text-sm text-left">
               <thead className="bg-solaris-50 dark:bg-solaris-950 border-b border-solaris-200 dark:border-solaris-800">
                 <tr>
-                  <th className="px-6 py-4 text-xs font-semibold text-solaris-500 dark:text-solaris-400 uppercase tracking-wider">Email</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-solaris-500 dark:text-solaris-400 uppercase tracking-wider">Service</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-solaris-500 dark:text-solaris-400 uppercase tracking-wider">Tags</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-solaris-500 dark:text-solaris-400 uppercase tracking-wider">Domain</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-solaris-500 dark:text-solaris-400 uppercase tracking-wider">Created</th>
+                  <th className="px-6 py-4 text-xs font-semibold text-solaris-500 dark:text-solaris-400 uppercase tracking-wider cursor-pointer select-none hover:text-solaris-700 dark:hover:text-solaris-300 transition-colors" onClick={() => handleSort("email")}>Email<SortArrow column="email" /></th>
+                  <th className="px-6 py-4 text-xs font-semibold text-solaris-500 dark:text-solaris-400 uppercase tracking-wider cursor-pointer select-none hover:text-solaris-700 dark:hover:text-solaris-300 transition-colors" onClick={() => handleSort("serviceName")}>Service<SortArrow column="serviceName" /></th>
+                  <th className="px-6 py-4 text-xs font-semibold text-solaris-500 dark:text-solaris-400 uppercase tracking-wider cursor-pointer select-none hover:text-solaris-700 dark:hover:text-solaris-300 transition-colors" onClick={() => handleSort("tags")}>Tags<SortArrow column="tags" /></th>
+                  <th className="px-6 py-4 text-xs font-semibold text-solaris-500 dark:text-solaris-400 uppercase tracking-wider cursor-pointer select-none hover:text-solaris-700 dark:hover:text-solaris-300 transition-colors" onClick={() => handleSort("domain")}>Domain<SortArrow column="domain" /></th>
+                  <th className="px-6 py-4 text-xs font-semibold text-solaris-500 dark:text-solaris-400 uppercase tracking-wider cursor-pointer select-none hover:text-solaris-700 dark:hover:text-solaris-300 transition-colors" onClick={() => handleSort("createdAt")}>Created<SortArrow column="createdAt" /></th>
+                  <th className="px-6 py-4 text-xs font-semibold text-solaris-500 dark:text-solaris-400 uppercase tracking-wider cursor-pointer select-none hover:text-solaris-700 dark:hover:text-solaris-300 transition-colors" onClick={() => handleSort("updatedAt")}>Modified<SortArrow column="updatedAt" /></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-solaris-200 dark:divide-solaris-800">
-                {filteredAliases.map((alias) => (
+                {displayedAliases.slice(0, visibleCount).map((alias) => (
                   <tr
                     key={alias.id}
                     onClick={() => openEdit(alias)}
@@ -322,8 +409,19 @@ export function AliasListPage() {
                         <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${getRowIconBg(alias)}`}>
                           {getRowIcon(alias)}
                         </div>
-                        <div>
-                          <div className="font-semibold text-solaris-900 dark:text-solaris-50">{alias.email}</div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-semibold text-solaris-900 dark:text-solaris-50">{alias.email}</span>
+                          <button
+                            onClick={(e) => handleCopy(e, alias.email, alias.id)}
+                            className="p-0.5 rounded hover:bg-solaris-200 dark:hover:bg-solaris-700 transition-colors flex-shrink-0"
+                            title="Copy to clipboard"
+                          >
+                            {copiedId === alias.id ? (
+                              <Check className="w-3.5 h-3.5 text-solaris-green-400" />
+                            ) : (
+                              <Copy className="w-3.5 h-3.5 text-solaris-400 dark:text-solaris-500" />
+                            )}
+                          </button>
                         </div>
                       </div>
                     </td>
@@ -353,23 +451,18 @@ export function AliasListPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-solaris-500 dark:text-solaris-400 text-xs">{formatDate(alias.createdAt)}</td>
+                    <td className="px-6 py-4 text-solaris-500 dark:text-solaris-400 text-xs">{formatDate(alias.updatedAt)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <div className="px-6 py-4 bg-solaris-50 dark:bg-solaris-950 border-t border-solaris-200 dark:border-solaris-800 flex items-center justify-between">
+          <div className="px-6 py-4 bg-solaris-50 dark:bg-solaris-950 border-t border-solaris-200 dark:border-solaris-800 text-center">
             <span className="text-sm text-solaris-500 dark:text-solaris-400">
-              Showing {filteredAliases.length} of {aliases.length} aliases
+              Showing {Math.min(visibleCount, displayedAliases.length)} of {displayedAliases.length} aliases
+              {aliases.length !== displayedAliases.length && <> &middot; {aliases.length} total</>}
             </span>
-            <div className="flex items-center gap-2">
-              <button className="px-3 py-1.5 text-sm text-solaris-400 dark:text-solaris-500 bg-white dark:bg-solaris-900 border border-solaris-200 dark:border-solaris-800 rounded-lg cursor-not-allowed">
-                Previous
-              </button>
-              <button className="px-3 py-1.5 text-sm text-solaris-400 dark:text-solaris-500 bg-white dark:bg-solaris-900 border border-solaris-200 dark:border-solaris-800 rounded-lg cursor-not-allowed">
-                Next
-              </button>
-            </div>
+            <div ref={sentinelRef} className="h-px" />
           </div>
         </div>
       )}
