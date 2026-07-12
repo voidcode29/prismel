@@ -79,18 +79,28 @@ export const aliasService = {
     const alias = aliasRepository.findById(id);
     if (!alias) return false;
 
-    // providerId is the numeric OVH redirection ID
     if (alias.providerId) {
+      // 1) Remove from remote provider
+      await ovhClient.request(
+        "DELETE",
+        `/email/domain/${alias.domain}/redirection/${alias.providerId}`
+      );
+
+      // 2) Verify it's been removed
       try {
         await ovhClient.request(
-          "DELETE",
+          "GET",
           `/email/domain/${alias.domain}/redirection/${alias.providerId}`
         );
+        // Still exists — deletion didn't take effect
+        throw new Error(`Redirection ${alias.providerId} still exists after delete`);
       } catch (e) {
-        console.warn("OVH delete failed:", (e as Error).message);
+        if ((e as Error).message.includes("still exists")) throw e;
+        // Expected: GET returns 404 after successful delete
       }
     }
 
+    // 3) Remove locally
     return aliasRepository.delete(id);
   },
 

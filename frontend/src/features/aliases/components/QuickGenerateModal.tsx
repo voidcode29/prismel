@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { CreateAliasInput } from "@prismel/shared";
 import { X, RefreshCw } from "lucide-react";
 import { api } from "../../../lib/api";
@@ -14,6 +14,13 @@ export function QuickGenerateModal({ open, onClose, onCreated }: QuickGenerateMo
   const [serviceName, setServiceName] = useState("");
   const [generated, setGenerated] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (open) {
+      setError(null);
+    }
+  }, [open]);
 
   if (!open) return null;
 
@@ -34,6 +41,7 @@ export function QuickGenerateModal({ open, onClose, onCreated }: QuickGenerateMo
   const handleCreate = async () => {
     if (!generated) return;
     setSubmitting(true);
+    setError(null);
     try {
       const input: CreateAliasInput = {
         email: generated,
@@ -45,8 +53,8 @@ export function QuickGenerateModal({ open, onClose, onCreated }: QuickGenerateMo
       setGenerated("");
       onCreated();
       onClose();
-    } catch {
-      // error handled by caller
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to create alias");
     } finally {
       setSubmitting(false);
     }
@@ -68,6 +76,11 @@ export function QuickGenerateModal({ open, onClose, onCreated }: QuickGenerateMo
           </button>
         </div>
         <div className="p-6 space-y-5">
+          {error && (
+            <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+              {error}
+            </div>
+          )}
           <div className="bg-slate-50 rounded-xl p-6 text-center border border-slate-200">
             <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
               Generated Alias

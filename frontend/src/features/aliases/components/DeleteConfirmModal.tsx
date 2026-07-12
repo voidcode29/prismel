@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Alias } from "@prismel/shared";
 import { X, Trash2 } from "lucide-react";
 import { api } from "../../../lib/api";
@@ -12,17 +12,25 @@ interface DeleteConfirmModalProps {
 
 export function DeleteConfirmModal({ open, alias, onClose, onDeleted }: DeleteConfirmModalProps) {
   const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (open) {
+      setError(null);
+    }
+  }, [open]);
 
   if (!open || !alias) return null;
 
   const handleDelete = async () => {
     setDeleting(true);
+    setError(null);
     try {
       await api.deleteAlias(alias.id);
       onDeleted();
       onClose();
-    } catch {
-      // error handled by caller
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to delete alias");
     } finally {
       setDeleting(false);
     }
@@ -41,6 +49,11 @@ export function DeleteConfirmModal({ open, alias, onClose, onDeleted }: DeleteCo
           </button>
         </div>
         <div className="p-6">
+          {error && (
+            <div className="px-4 py-3 mb-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+              {error}
+            </div>
+          )}
           <p className="text-sm text-slate-600">
             Are you sure you want to delete <span className="font-semibold text-slate-900">{alias.email}</span>?
             This action cannot be undone.
