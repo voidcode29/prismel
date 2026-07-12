@@ -17,18 +17,18 @@ import { DeleteConfirmModal } from "./DeleteConfirmModal";
 import { AliasFormModal } from "./AliasFormModal";
 
 const TAG_COLORS: Record<string, string> = {
-  public: "bg-blue-50 text-blue-700 border-blue-100",
-  contact: "bg-emerald-50 text-emerald-700 border-emerald-100",
-  shopping: "bg-amber-50 text-amber-700 border-amber-100",
-  perso: "bg-purple-50 text-purple-700 border-purple-100",
-  newsletter: "bg-rose-50 text-rose-700 border-rose-100",
-  pro: "bg-sky-50 text-sky-700 border-sky-100",
-  support: "bg-emerald-50 text-emerald-700 border-emerald-100",
-  social: "bg-violet-50 text-violet-700 border-violet-100",
+  public: "bg-solaris-blue-50 dark:bg-solaris-blue-900/30 text-solaris-blue-600 dark:text-solaris-blue-200 border-solaris-blue-100 dark:border-solaris-blue-800",
+  contact: "bg-solaris-green-50 dark:bg-solaris-green-900/30 text-solaris-green-500 dark:text-solaris-green-200 border-solaris-green-200 dark:border-solaris-green-800",
+  shopping: "bg-solaris-yellow-50 dark:bg-solaris-yellow-900/30 text-solaris-yellow-600 dark:text-solaris-yellow-200 border-solaris-yellow-100 dark:border-solaris-yellow-800",
+  perso: "bg-solaris-violet-50 dark:bg-solaris-violet-900/30 text-solaris-violet-500 dark:text-solaris-violet-200 border-solaris-violet-100 dark:border-solaris-violet-800",
+  newsletter: "bg-solaris-magenta-50 dark:bg-solaris-magenta-900/30 text-solaris-magenta-500 dark:text-solaris-magenta-200 border-solaris-magenta-100 dark:border-solaris-magenta-800",
+  pro: "bg-solaris-cyan-50 dark:bg-solaris-cyan-900/30 text-solaris-cyan-600 dark:text-solaris-cyan-200 border-solaris-cyan-100 dark:border-solaris-cyan-800",
+  support: "bg-solaris-green-50 dark:bg-solaris-green-900/30 text-solaris-green-500 dark:text-solaris-green-200 border-solaris-green-200 dark:border-solaris-green-800",
+  social: "bg-solaris-violet-50 dark:bg-solaris-violet-900/30 text-solaris-violet-500 dark:text-solaris-violet-200 border-solaris-violet-100 dark:border-solaris-violet-800",
 };
 
 function getTagClasses(tag: string): string {
-  return TAG_COLORS[tag] || "bg-slate-50 text-slate-700 border-slate-100";
+  return TAG_COLORS[tag] || "bg-solaris-50 dark:bg-solaris-950 text-solaris-700 dark:text-solaris-300 border-solaris-100 dark:border-solaris-800";
 }
 
 function formatDate(dateStr: string): string {
@@ -37,25 +37,25 @@ function formatDate(dateStr: string): string {
 }
 
 const ICONS_BY_TAG: Record<string, React.ReactNode> = {
-  public: <Mail className="w-5 h-5 text-indigo-600" />,
-  contact: <Mail className="w-5 h-5 text-indigo-600" />,
+  public: <Mail className="w-5 h-5 text-solaris-blue-500 dark:text-solaris-blue-300" />,
+  contact: <Mail className="w-5 h-5 text-solaris-blue-500 dark:text-solaris-blue-300" />,
   shopping: (
-    <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5 text-solaris-yellow-500 dark:text-solaris-yellow-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
     </svg>
   ),
   newsletter: (
-    <svg className="w-5 h-5 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5 text-solaris-magenta-400 dark:text-solaris-magenta-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
     </svg>
   ),
   support: (
-    <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5 text-solaris-green-400 dark:text-solaris-green-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
     </svg>
   ),
   social: (
-    <svg className="w-5 h-5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-5 h-5 text-solaris-violet-400 dark:text-solaris-violet-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2v-8a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
     </svg>
   ),
@@ -64,20 +64,20 @@ const ICONS_BY_TAG: Record<string, React.ReactNode> = {
 function getRowIcon(alias: Alias): React.ReactNode {
   const tag = alias.tags[0];
   if (tag && ICONS_BY_TAG[tag]) return ICONS_BY_TAG[tag];
-  return <Mail className="w-5 h-5 text-indigo-600" />;
+  return <Mail className="w-5 h-5 text-solaris-blue-500 dark:text-solaris-blue-300" />;
 }
 
 function getRowIconBg(alias: Alias): string {
   const tag = alias.tags[0];
   const bgs: Record<string, string> = {
-    public: "bg-indigo-100",
-    contact: "bg-indigo-100",
-    shopping: "bg-amber-100",
-    newsletter: "bg-rose-100",
-    support: "bg-emerald-100",
-    social: "bg-violet-100",
+    public: "bg-solaris-blue-100 dark:bg-solaris-blue-800/30",
+    contact: "bg-solaris-blue-100 dark:bg-solaris-blue-800/30",
+    shopping: "bg-solaris-yellow-100 dark:bg-solaris-yellow-800/30",
+    newsletter: "bg-solaris-magenta-100 dark:bg-solaris-magenta-800/30",
+    support: "bg-solaris-green-100 dark:bg-solaris-green-800/30",
+    social: "bg-solaris-violet-100 dark:bg-solaris-violet-800/30",
   };
-  return bgs[tag || ""] || "bg-indigo-100";
+  return bgs[tag || ""] || "bg-solaris-blue-100 dark:bg-solaris-blue-800/30";
 }
 
 export function AliasListPage() {
@@ -147,8 +147,8 @@ export function AliasListPage() {
   if (loading) {
     return (
       <div className="py-12 text-center">
-        <div className="inline-flex items-center gap-2 text-slate-500">
-          <div className="w-5 h-5 border-2 border-slate-300 border-t-indigo-600 rounded-full animate-spin" />
+        <div className="inline-flex items-center gap-2 text-solaris-500 dark:text-solaris-400">
+          <div className="w-5 h-5 border-2 border-solaris-300 dark:border-solaris-700 border-t-solaris-blue-500 dark:border-t-solaris-blue-400 rounded-full animate-spin" />
           Loading aliases...
         </div>
       </div>
@@ -158,12 +158,12 @@ export function AliasListPage() {
   if (error) {
     return (
       <div className="py-12 text-center">
-        <div className="inline-block bg-red-50 border border-red-200 rounded-xl px-6 py-4">
-          <p className="text-sm text-red-700 font-medium mb-2">Error loading aliases</p>
-          <p className="text-sm text-red-600">{error}</p>
+        <div className="inline-block bg-solaris-red-50 dark:bg-solaris-red-900/30 border border-solaris-red-200 dark:border-solaris-red-800 rounded-xl px-6 py-4">
+          <p className="text-sm text-solaris-red-500 dark:text-solaris-red-200 font-medium mb-2">Error loading aliases</p>
+          <p className="text-sm text-solaris-red-400 dark:text-solaris-red-200">{error}</p>
           <button
             onClick={fetchAliases}
-            className="mt-3 px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors"
+            className="mt-3 px-4 py-2 bg-solaris-red-400 text-white rounded-lg text-sm font-medium hover:bg-solaris-red-500 transition-colors"
           >
             Retry
           </button>
@@ -177,15 +177,15 @@ export function AliasListPage() {
       {/* Page Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Email Aliases</h1>
-          <p className="text-sm text-slate-500 mt-1">Manage and organize your email aliases across domains</p>
+          <h1 className="text-2xl font-bold text-solaris-900 dark:text-solaris-50">Email Aliases</h1>
+          <p className="text-sm text-solaris-500 dark:text-solaris-400 mt-1">Manage and organize your email aliases across domains</p>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={() => setGenerateModalOpen(true)}
-            className="px-4 py-2.5 bg-white border border-slate-300 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 hover:border-slate-400 transition-all flex items-center gap-2 shadow-sm"
+            className="px-4 py-2.5 bg-white dark:bg-solaris-900 border border-solaris-300 dark:border-solaris-700 rounded-xl text-sm font-medium text-solaris-700 dark:text-solaris-300 hover:bg-solaris-200 dark:hover:bg-solaris-800 hover:border-solaris-400 dark:hover:border-solaris-600 transition-all flex items-center gap-2 shadow-sm"
           >
-            <Zap className="w-4 h-4 text-indigo-600" />
+            <Zap className="w-4 h-4 text-solaris-blue-500 dark:text-solaris-blue-300" />
             Quick Generate
           </button>
           <button
@@ -194,7 +194,7 @@ export function AliasListPage() {
               setAliasToEdit(null);
               setFormModalOpen(true);
             }}
-            className="px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-all flex items-center gap-2 shadow-lg shadow-indigo-500/25"
+            className="px-4 py-2.5 bg-solaris-blue-500 dark:bg-solaris-blue-400 text-white rounded-xl text-sm font-medium hover:bg-solaris-blue-600 transition-all flex items-center gap-2 shadow-lg shadow-solaris-blue-400/25"
           >
             <Plus className="w-4 h-4" />
             Create Alias
@@ -204,63 +204,63 @@ export function AliasListPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <div className="bg-white dark:bg-solaris-900 p-5 rounded-xl border border-solaris-200 dark:border-solaris-800 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total</span>
-            <div className="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center">
-              <Mail className="w-4 h-4 text-indigo-600" />
+            <span className="text-xs font-semibold text-solaris-500 dark:text-solaris-400 uppercase tracking-wider">Total</span>
+            <div className="w-8 h-8 bg-solaris-blue-50 dark:bg-solaris-blue-900/30 rounded-lg flex items-center justify-center">
+              <Mail className="w-4 h-4 text-solaris-blue-500 dark:text-solaris-blue-300" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-slate-900">{stats.total}</div>
+          <div className="text-3xl font-bold text-solaris-900 dark:text-solaris-50">{stats.total}</div>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <div className="bg-white dark:bg-solaris-900 p-5 rounded-xl border border-solaris-200 dark:border-solaris-800 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Domains</span>
-            <div className="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center">
-              <Globe className="w-4 h-4 text-emerald-600" />
+            <span className="text-xs font-semibold text-solaris-500 dark:text-solaris-400 uppercase tracking-wider">Domains</span>
+            <div className="w-8 h-8 bg-solaris-green-50 dark:bg-solaris-green-900/30 rounded-lg flex items-center justify-center">
+              <Globe className="w-4 h-4 text-solaris-green-400 dark:text-solaris-green-200" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-slate-900">{stats.domains}</div>
+          <div className="text-3xl font-bold text-solaris-900 dark:text-solaris-50">{stats.domains}</div>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <div className="bg-white dark:bg-solaris-900 p-5 rounded-xl border border-solaris-200 dark:border-solaris-800 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Active</span>
-            <div className="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+            <span className="text-xs font-semibold text-solaris-500 dark:text-solaris-400 uppercase tracking-wider">Active</span>
+            <div className="w-8 h-8 bg-solaris-green-50 dark:bg-solaris-green-900/30 rounded-lg flex items-center justify-center">
+              <CheckCircle2 className="w-4 h-4 text-solaris-green-400" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-emerald-600">{stats.active}</div>
+          <div className="text-3xl font-bold text-solaris-green-400 dark:text-solaris-green-200">{stats.active}</div>
         </div>
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+        <div className="bg-white dark:bg-solaris-900 p-5 rounded-xl border border-solaris-200 dark:border-solaris-800 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tags</span>
-            <div className="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center">
-              <Tag className="w-4 h-4 text-amber-600" />
+            <span className="text-xs font-semibold text-solaris-500 dark:text-solaris-400 uppercase tracking-wider">Tags</span>
+            <div className="w-8 h-8 bg-solaris-yellow-50 dark:bg-solaris-yellow-900/30 rounded-lg flex items-center justify-center">
+              <Tag className="w-4 h-4 text-solaris-yellow-500 dark:text-solaris-yellow-200" />
             </div>
           </div>
-          <div className="text-3xl font-bold text-amber-600">{stats.tags}</div>
+          <div className="text-3xl font-bold text-solaris-yellow-500 dark:text-solaris-yellow-200">{stats.tags}</div>
         </div>
       </div>
 
       {/* Search Bar */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 mb-6">
+      <div className="bg-white dark:bg-solaris-900 rounded-xl border border-solaris-200 dark:border-solaris-800 shadow-sm p-4 mb-6">
         <div className="flex items-center gap-4">
           <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-solaris-400 dark:text-solaris-500" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by email, service, or tags..."
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition-all"
+              className="w-full pl-10 pr-4 py-2.5 bg-solaris-50 dark:bg-solaris-950 border border-solaris-200 dark:border-solaris-800 rounded-lg focus:ring-2 focus:ring-solaris-blue-400 focus:border-solaris-blue-400 outline-none text-sm transition-all"
             />
           </div>
           <div className="flex items-center gap-2">
-            <button className="px-3 py-2.5 text-sm font-medium text-slate-600 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors flex items-center gap-2">
+            <button className="px-3 py-2.5 text-sm font-medium text-solaris-600 dark:text-solaris-400 bg-solaris-50 dark:bg-solaris-950 border border-solaris-200 dark:border-solaris-800 rounded-lg hover:bg-solaris-100 dark:hover:bg-solaris-700 transition-colors flex items-center gap-2">
               <Filter className="w-4 h-4" />
               Filter
             </button>
-            <button className="px-3 py-2.5 text-sm font-medium text-slate-600 bg-slate-50 border border-slate-200 rounded-lg hover:bg-slate-100 transition-colors flex items-center gap-2">
+            <button className="px-3 py-2.5 text-sm font-medium text-solaris-600 dark:text-solaris-400 bg-solaris-50 dark:bg-solaris-950 border border-solaris-200 dark:border-solaris-800 rounded-lg hover:bg-solaris-100 dark:hover:bg-solaris-700 transition-colors flex items-center gap-2">
               <ArrowUpDown className="w-4 h-4" />
               Sort
             </button>
@@ -270,12 +270,12 @@ export function AliasListPage() {
 
       {/* Table or Empty State */}
       {aliases.length === 0 ? (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-16 text-center">
-          <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
-            <Mail className="w-8 h-8 text-slate-400" strokeWidth={1.5} />
+        <div className="bg-white dark:bg-solaris-900 rounded-xl border border-solaris-200 dark:border-solaris-800 shadow-sm p-16 text-center">
+          <div className="w-16 h-16 bg-solaris-100 dark:bg-solaris-800 rounded-2xl flex items-center justify-center mx-auto mb-5">
+            <Mail className="w-8 h-8 text-solaris-400 dark:text-solaris-500" strokeWidth={1.5} />
           </div>
-          <h3 className="text-lg font-semibold text-slate-900 mb-2">No aliases yet</h3>
-          <p className="text-sm text-slate-500 max-w-sm mx-auto mb-6">
+          <h3 className="text-lg font-semibold text-solaris-900 dark:text-solaris-50 mb-2">No aliases yet</h3>
+          <p className="text-sm text-solaris-500 dark:text-solaris-400 max-w-sm mx-auto mb-6">
             Create your first email alias to start organizing your online identity.
           </p>
           <div className="flex items-center justify-center gap-3">
@@ -285,37 +285,37 @@ export function AliasListPage() {
                 setAliasToEdit(null);
                 setFormModalOpen(true);
               }}
-              className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/25"
+              className="px-5 py-2.5 bg-solaris-blue-500 dark:bg-solaris-blue-400 text-white rounded-xl text-sm font-medium hover:bg-solaris-blue-600 transition-all shadow-lg shadow-solaris-blue-400/25"
             >
               Create Alias
             </button>
             <button
               onClick={() => setGenerateModalOpen(true)}
-              className="px-5 py-2.5 bg-white border border-slate-300 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-50 transition-all"
+              className="px-5 py-2.5 bg-white dark:bg-solaris-900 border border-solaris-300 dark:border-solaris-700 text-solaris-700 dark:text-solaris-300 rounded-xl text-sm font-medium hover:bg-solaris-200 dark:hover:bg-solaris-800 transition-all"
             >
               Generate One
             </button>
           </div>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-solaris-900 rounded-xl border border-solaris-200 dark:border-solaris-800 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-              <thead className="bg-slate-50 border-b border-slate-200">
+              <thead className="bg-solaris-50 dark:bg-solaris-950 border-b border-solaris-200 dark:border-solaris-800">
                 <tr>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Email</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Service</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Tags</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Domain</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Created</th>
+                  <th className="px-6 py-4 text-xs font-semibold text-solaris-500 dark:text-solaris-400 uppercase tracking-wider">Email</th>
+                  <th className="px-6 py-4 text-xs font-semibold text-solaris-500 dark:text-solaris-400 uppercase tracking-wider">Service</th>
+                  <th className="px-6 py-4 text-xs font-semibold text-solaris-500 dark:text-solaris-400 uppercase tracking-wider">Tags</th>
+                  <th className="px-6 py-4 text-xs font-semibold text-solaris-500 dark:text-solaris-400 uppercase tracking-wider">Domain</th>
+                  <th className="px-6 py-4 text-xs font-semibold text-solaris-500 dark:text-solaris-400 uppercase tracking-wider">Created</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200">
+              <tbody className="divide-y divide-solaris-200 dark:divide-solaris-800">
                 {filteredAliases.map((alias) => (
                   <tr
                     key={alias.id}
                     onClick={() => openEdit(alias)}
-                    className="hover:bg-slate-50/60 transition-colors cursor-pointer"
+                    className="hover:bg-solaris-200/60 dark:hover:bg-solaris-800/60 transition-colors cursor-pointer"
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
@@ -323,16 +323,16 @@ export function AliasListPage() {
                           {getRowIcon(alias)}
                         </div>
                         <div>
-                          <div className="font-semibold text-slate-900">{alias.email}</div>
+                          <div className="font-semibold text-solaris-900 dark:text-solaris-50">{alias.email}</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="font-medium text-slate-700">
+                      <div className="font-medium text-solaris-700 dark:text-solaris-300">
                         {alias.serviceName || "—"}
                       </div>
                       {alias.description && (
-                        <div className="text-xs text-slate-500 truncate max-w-[200px]">{alias.description}</div>
+                        <div className="text-xs text-solaris-500 dark:text-solaris-400 truncate max-w-[200px]">{alias.description}</div>
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -348,25 +348,25 @@ export function AliasListPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium bg-solaris-100 dark:bg-solaris-800 text-solaris-700 dark:text-solaris-300 border border-solaris-200 dark:border-solaris-800">
                         {alias.domain}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-slate-500 text-xs">{formatDate(alias.createdAt)}</td>
+                    <td className="px-6 py-4 text-solaris-500 dark:text-solaris-400 text-xs">{formatDate(alias.createdAt)}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-          <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
-            <span className="text-sm text-slate-500">
+          <div className="px-6 py-4 bg-solaris-50 dark:bg-solaris-950 border-t border-solaris-200 dark:border-solaris-800 flex items-center justify-between">
+            <span className="text-sm text-solaris-500 dark:text-solaris-400">
               Showing {filteredAliases.length} of {aliases.length} aliases
             </span>
             <div className="flex items-center gap-2">
-              <button className="px-3 py-1.5 text-sm text-slate-400 bg-white border border-slate-200 rounded-lg cursor-not-allowed">
+              <button className="px-3 py-1.5 text-sm text-solaris-400 dark:text-solaris-500 bg-white dark:bg-solaris-900 border border-solaris-200 dark:border-solaris-800 rounded-lg cursor-not-allowed">
                 Previous
               </button>
-              <button className="px-3 py-1.5 text-sm text-slate-400 bg-white border border-slate-200 rounded-lg cursor-not-allowed">
+              <button className="px-3 py-1.5 text-sm text-solaris-400 dark:text-solaris-500 bg-white dark:bg-solaris-900 border border-solaris-200 dark:border-solaris-800 rounded-lg cursor-not-allowed">
                 Next
               </button>
             </div>

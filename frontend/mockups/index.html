@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prismel — Solarized Theme Mockups</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.5; }
+
+  .page { padding: 32px 16px; min-height: 100vh; transition: background .2s, color .2s; }
+  .page + .page { border-top: 2px dashed #888; }
+
+  .wrap { max-width: 960px; margin: 0 auto; }
+  .page-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+  .page-sub  { font-size: 13px; margin-bottom: 24px; opacity: .65; }
+
+  /* ── shared component shapes ── */
+  .header { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-radius: 12px; margin-bottom: 24px; }
+  .logo   { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 700; }
+  .logo-icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .nav    { display: flex; gap: 4px; font-size: 13px; font-weight: 500; }
+  .nav a  { padding: 6px 14px; border-radius: 8px; text-decoration: none; }
+  .nav a.active { font-weight: 600; }
+  .header-actions { display: flex; align-items: center; gap: 10px; }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #fff; }
+
+  .stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
+  .stat-card { padding: 16px; border-radius: 12px; border: 1px solid; }
+  .stat-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px; }
+  .stat-value { font-size: 28px; font-weight: 700; }
+
+  .search-bar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 10px; border: 1px solid; margin-bottom: 20px; }
+  .search-bar input { flex: 1; border: none; background: none; outline: none; font-size: 14px; }
+
+  table { width: 100%; border-collapse: collapse; border-radius: 12px; overflow: hidden; }
+  th { text-align: left; padding: 10px 16px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+  td { padding: 12px 16px; font-size: 13px; }
+  tr { border-bottom: 1px solid; }
+  tr:last-child { border-bottom: none; }
+
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 500; }
+  .btn { padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; border: none; cursor: default; display: inline-flex; align-items: center; gap: 6px; }
+  .btn-ghost { background: none; }
+  .flex-row { display: flex; gap: 8px; margin-top: 20px; }
+
+  /* ── Theme 1: Classic Solarized Dark ── */
+  .t1 { color: #839496; }
+  .t1 .page { background: #002B36; }
+  .t1 .page-title, .t1 .logo { color: #93A1A1; }
+  .t1 .page-sub { color: #586E75; }
+  .t1 .header { background: #073642; border: 1px solid #586E75; }
+  .t1 .logo-icon { background: #268BD2; color: #fff; }
+  .t1 .nav a { color: #839496; }
+  .t1 .nav a:hover { background: #002B36; color: #93A1A1; }
+  .t1 .nav a.active { background: #586E75; color: #FDF6E3; }
+  .t1 .stat-card { background: #073642; border-color: #586E75; }
+  .t1 .stat-label { color: #586E75; }
+  .t1 .stat-value { color: #93A1A1; }
+  .t1 .search-bar { background: #073642; border-color: #586E75; color: #839496; }
+  .t1 .search-bar input { color: #839496; }
+  .t1 .search-bar input::placeholder { color: #586E75; }
+  .t1 table { background: #073642; }
+  .t1 th { color: #586E75; }
+  .t1 td { color: #839496; }
+  .t1 tr { border-color: #586E75; }
+  .t1 .badge-blue { background: #073642; color: #268BD2; border: 1px solid #268BD2; }
+  .t1 .badge-red { background: #073642; color: #DC322F; border: 1px solid #DC322F; }
+  .t1 .badge-green { background: #073642; color: #859900; border: 1px solid #859900; }
+  .t1 .badge-violet { background: #073642; color: #6C71C4; border: 1px solid #6C71C4; }
+  .t1 .btn-primary { background: #268BD2; color: #FDF6E3; }
+  .t1 .btn-danger { background: #DC322F; color: #FDF6E3; }
+  .t1 .btn-ghost { color: #839496; }
+
+  /* ── Theme 2: Solarized Light ── */
+  .t2 { color: #657B83; }
+  .t2 .page { background: #FDF6E3; }
+  .t2 .page-title, .t2 .logo { color: #073642; }
+  .t2 .page-sub { color: #93A1A1; }
+  .t2 .header { background: #EEE8D5; border: 1px solid #93A1A1; }
+  .t2 .logo-icon { background: #268BD2; color: #fff; }
+  .t2 .nav a { color: #657B83; }
+  .t2 .nav a:hover { background: #FDF6E3; color: #073642; }
+  .t2 .nav a.active { background: #93A1A1; color: #FDF6E3; }
+  .t2 .stat-card { background: #EEE8D5; border-color: #93A1A1; }
+  .t2 .stat-label { color: #93A1A1; }
+  .t2 .stat-value { color: #073642; }
+  .t2 .search-bar { background: #EEE8D5; border-color: #93A1A1; color: #657B83; }
+  .t2 .search-bar input { color: #657B83; }
+  .t2 .search-bar input::placeholder { color: #93A1A1; }
+  .t2 table { background: #EEE8D5; }
+  .t2 th { color: #93A1A1; }
+  .t2 td { color: #657B83; }
+  .t2 tr { border-color: #93A1A1; }
+  .t2 .badge-blue { background: #FDF6E3; color: #268BD2; border: 1px solid #268BD2; }
+  .t2 .badge-red { background: #FDF6E3; color: #DC322F; border: 1px solid #DC322F; }
+  .t2 .badge-green { background: #FDF6E3; color: #859900; border: 1px solid #859900; }
+  .t2 .badge-violet { background: #FDF6E3; color: #6C71C4; border: 1px solid #6C71C4; }
+  .t2 .btn-primary { background: #268BD2; color: #FDF6E3; }
+  .t2 .btn-danger { background: #DC322F; color: #FDF6E3; }
+  .t2 .btn-ghost { color: #657B83; }
+
+  /* ── Theme 3: Warm Ember ── */
+  .t3 { color: #A09080; }
+  .t3 .page { background: #1E1610; }
+  .t3 .page-title, .t3 .logo { color: #D4C4B0; }
+  .t3 .page-sub { color: #8A7A6A; }
+  .t3 .header { background: #2A1E14; border: 1px solid #5A4A3A; }
+  .t3 .logo-icon { background: #B58900; color: #1E1610; }
+  .t3 .nav a { color: #A09080; }
+  .t3 .nav a:hover { background: #1E1610; color: #D4C4B0; }
+  .t3 .nav a.active { background: #CB4B16; color: #FDF6E3; }
+  .t3 .stat-card { background: #2A1E14; border-color: #5A4A3A; }
+  .t3 .stat-label { color: #8A7A6A; }
+  .t3 .stat-value { color: #D4C4B0; }
+  .t3 .search-bar { background: #2A1E14; border-color: #5A4A3A; color: #A09080; }
+  .t3 .search-bar input { color: #A09080; }
+  .t3 .search-bar input::placeholder { color: #8A7A6A; }
+  .t3 table { background: #2A1E14; }
+  .t3 th { color: #8A7A6A; }
+  .t3 td { color: #A09080; }
+  .t3 tr { border-color: #5A4A3A; }
+  .t3 .badge-blue { background: #2A1E14; color: #CB4B16; border: 1px solid #CB4B16; }
+  .t3 .badge-red { background: #2A1E14; color: #DC322F; border: 1px solid #DC322F; }
+  .t3 .badge-green { background: #2A1E14; color: #859900; border: 1px solid #859900; }
+  .t3 .badge-violet { background: #2A1E14; color: #B58900; border: 1px solid #B58900; }
+  .t3 .btn-primary { background: #CB4B16; color: #FDF6E3; }
+  .t3 .btn-danger { background: #DC322F; color: #FDF6E3; }
+  .t3 .btn-ghost { color: #A09080; }
+
+  /* ── Theme 4: Cool Ocean ── */
+  .t4 { color: #7B9CAB; }
+  .t4 .page { background: #0A1A24; }
+  .t4 .page-title, .t4 .logo { color: #A3C4D4; }
+  .t4 .page-sub { color: #4A6A7A; }
+  .t4 .header { background: #0E2432; border: 1px solid #2A4A5A; }
+  .t4 .logo-icon { background: #2AA198; color: #0A1A24; }
+  .t4 .nav a { color: #7B9CAB; }
+  .t4 .nav a:hover { background: #0A1A24; color: #A3C4D4; }
+  .t4 .nav a.active { background: #268BD2; color: #FDF6E3; }
+  .t4 .stat-card { background: #0E2432; border-color: #2A4A5A; }
+  .t4 .stat-label { color: #4A6A7A; }
+  .t4 .stat-value { color: #A3C4D4; }
+  .t4 .search-bar { background: #0E2432; border-color: #2A4A5A; color: #7B9CAB; }
+  .t4 .search-bar input { color: #7B9CAB; }
+  .t4 .search-bar input::placeholder { color: #4A6A7A; }
+  .t4 table { background: #0E2432; }
+  .t4 th { color: #4A6A7A; }
+  .t4 td { color: #7B9CAB; }
+  .t4 tr { border-color: #2A4A5A; }
+  .t4 .badge-blue { background: #0E2432; color: #268BD2; border: 1px solid #268BD2; }
+  .t4 .badge-red { background: #0E2432; color: #DC322F; border: 1px solid #DC322F; }
+  .t4 .badge-green { background: #0E2432; color: #2AA198; border: 1px solid #2AA198; }
+  .t4 .badge-violet { background: #0E2432; color: #6C71C4; border: 1px solid #6C71C4; }
+  .t4 .btn-primary { background: #268BD2; color: #FDF6E3; }
+  .t4 .btn-danger { background: #DC322F; color: #FDF6E3; }
+  .t4 .btn-ghost { color: #7B9CAB; }
+
+  /* ── Theme 5: Muted Stone ── */
+  .t5 { color: #6B7280; }
+  .t5 .page { background: #F3F4F6; }
+  .t5 .page-title, .t5 .logo { color: #1F2937; }
+  .t5 .page-sub { color: #9CA3AF; }
+  .t5 .header { background: #FFFFFF; border: 1px solid #D1D5DB; }
+  .t5 .logo-icon { background: #586E75; color: #fff; }
+  .t5 .nav a { color: #6B7280; }
+  .t5 .nav a:hover { background: #F3F4F6; color: #1F2937; }
+  .t5 .nav a.active { background: #586E75; color: #FFFFFF; }
+  .t5 .stat-card { background: #FFFFFF; border-color: #D1D5DB; }
+  .t5 .stat-label { color: #9CA3AF; }
+  .t5 .stat-value { color: #1F2937; }
+  .t5 .search-bar { background: #F9FAFB; border-color: #D1D5DB; color: #6B7280; }
+  .t5 .search-bar input { color: #6B7280; }
+  .t5 .search-bar input::placeholder { color: #9CA3AF; }
+  .t5 table { background: #FFFFFF; }
+  .t5 th { color: #9CA3AF; }
+  .t5 td { color: #6B7280; }
+  .t5 tr { border-color: #E5E7EB; }
+  .t5 .badge-blue { background: #F3F4F6; color: #586E75; border: 1px solid #D1D5DB; }
+  .t5 .badge-red { background: #F3F4F6; color: #DC322F; border: 1px solid #FCA5A5; }
+  .t5 .badge-green { background: #F3F4F6; color: #859900; border: 1px solid #B5C84D; }
+  .t5 .badge-violet { background: #F3F4F6; color: #6C71C4; border: 1px solid #A5A8E0; }
+  .t5 .btn-primary { background: #586E75; color: #FFFFFF; }
+  .t5 .btn-danger { background: #DC322F; color: #FFFFFF; }
+  .t5 .btn-ghost { color: #6B7280; }
+
+  /* tint for t5 make it slightly solarized */
+  .t5 .page { background: #EEE8D5; }
+  .t5 .header { background: #FDF6E3; border-color: #C8C1A8; }
+  .t5 .stat-card { background: #FDF6E3; border-color: #C8C1A8; }
+  .t5 table { background: #FDF6E3; }
+  .t5 th { color: #93A1A1; }
+  .t5 td { color: #657B83; }
+  .t5 tr { border-color: #C8C1A8; }
+  .t5 .search-bar { background: #FDF6E3; border-color: #C8C1A8; }
+  .t5 .stat-label { color: #93A1A1; }
+  .t5 .stat-value { color: #073642; }
+  .t5 .page-title, .t5 .logo { color: #073642; }
+  .t5 .page-sub { color: #839496; }
+  .t5 .nav a { color: #657B83; }
+  .t5 .nav a:hover { background: #EEE8D5; color: #073642; }
+  .t5 .badge-blue { background: #EEE8D5; color: #586E75; border-color: #93A1A1; }
+  .t5 .btn-primary { background: #586E75; color: #FDF6E3; }
+  .t5 .btn-ghost { color: #657B83; }
+
+</style>
+</head>
+<body>
+
+<!----------------------------------------------------------------- THEME 1 -->
+<div class="t1 section">
+<div class="page">
+  <div class="wrap">
+    <div class="page-title">Theme 1 &mdash; Classic Solarized Dark</div>
+    <div class="page-sub">Faithful to the original Ethan Schoonover palette. base03 background, blue primary.</div>
+
+    <div class="header">
+      <div class="logo"><div class="logo-icon">P</div>Prismel</div>
+      <div class="nav">
+        <a href="#" class="active">Aliases</a>
+        <a href="#">Sync</a>
+        <a href="#">Settings</a>
+      </div>
+      <div class="header-actions">
+        <div class="avatar" style="background:#268BD2">TD</div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value">67</div></div>
+      <div class="stat-card"><div class="stat-label">Domains</div><div class="stat-value">4</div></div>
+      <div class="stat-card"><div class="stat-label">Active</div><div class="stat-value">52</div></div>
+      <div class="stat-card"><div class="stat-label">Tags</div><div class="stat-value">12</div></div>
+    </div>
+
+    <div class="search-bar"><span>&#128269;</span> <input placeholder="Search aliases..." readonly></div>
+
+    <table>
+      <thead><tr><th>Email</th><th>Service</th><th>Tags</th><th>Domain</th></tr></thead>
+      <tbody>
+        <tr><td>hello@acme.com</td><td>Acme Corp</td><td><span class="badge badge-blue">public</span> <span class="badge badge-green">active</span></td><td>acme.com</td></tr>
+        <tr><td>billing@shop.io</td><td>Shop</td><td><span class="badge badge-violet">finance</span> <span class="badge badge-red">urgent</span></td><td>shop.io</td></tr>
+        <tr><td>support@app.dev</td><td>App</td><td><span class="badge badge-blue">public</span></td><td>app.dev</td></tr>
+      </tbody>
+    </table>
+
+    <div class="flex-row">
+      <button class="btn btn-primary">+ New Alias</button>
+      <button class="btn btn-ghost">Quick Generate</button>
+      <button class="btn btn-danger">Delete</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!----------------------------------------------------------------- THEME 2 -->
+<div class="t2 section">
+<div class="page">
+  <div class="wrap">
+    <div class="page-title">Theme 2 &mdash; Solarized Light</div>
+    <div class="page-sub">Original light palette. Warm paper background (base3), blue primary. Good daylight readability.</div>
+
+    <div class="header">
+      <div class="logo"><div class="logo-icon">P</div>Prismel</div>
+      <div class="nav">
+        <a href="#" class="active">Aliases</a>
+        <a href="#">Sync</a>
+        <a href="#">Settings</a>
+      </div>
+      <div class="header-actions">
+        <div class="avatar" style="background:#268BD2">TD</div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value">67</div></div>
+      <div class="stat-card"><div class="stat-label">Domains</div><div class="stat-value">4</div></div>
+      <div class="stat-card"><div class="stat-label">Active</div><div class="stat-value">52</div></div>
+      <div class="stat-card"><div class="stat-label">Tags</div><div class="stat-value">12</div></div>
+    </div>
+
+    <div class="search-bar"><span>&#128269;</span> <input placeholder="Search aliases..." readonly></div>
+
+    <table>
+      <thead><tr><th>Email</th><th>Service</th><th>Tags</th><th>Domain</th></tr></thead>
+      <tbody>
+        <tr><td>hello@acme.com</td><td>Acme Corp</td><td><span class="badge badge-blue">public</span> <span class="badge badge-green">active</span></td><td>acme.com</td></tr>
+        <tr><td>billing@shop.io</td><td>Shop</td><td><span class="badge badge-violet">finance</span> <span class="badge badge-red">urgent</span></td><td>shop.io</td></tr>
+        <tr><td>support@app.dev</td><td>App</td><td><span class="badge badge-blue">public</span></td><td>app.dev</td></tr>
+      </tbody>
+    </table>
+
+    <div class="flex-row">
+      <button class="btn btn-primary">+ New Alias</button>
+      <button class="btn btn-ghost">Quick Generate</button>
+      <button class="btn btn-danger">Delete</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!----------------------------------------------------------------- THEME 3 -->
+<div class="t3 section">
+<div class="page">
+  <div class="wrap">
+    <div class="page-title">Theme 3 &mdash; Warm Ember</div>
+    <div class="page-sub">Dark warm-brown base. Orange primary accent. Cozy, terminal-like feel.</div>
+
+    <div class="header">
+      <div class="logo"><div class="logo-icon" style="color:#1E1610">P</div>Prismel</div>
+      <div class="nav">
+        <a href="#" class="active">Aliases</a>
+        <a href="#">Sync</a>
+        <a href="#">Settings</a>
+      </div>
+      <div class="header-actions">
+        <div class="avatar" style="background:#CB4B16">TD</div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value">67</div></div>
+      <div class="stat-card"><div class="stat-label">Domains</div><div class="stat-value">4</div></div>
+      <div class="stat-card"><div class="stat-label">Active</div><div class="stat-value">52</div></div>
+      <div class="stat-card"><div class="stat-label">Tags</div><div class="stat-value">12</div></div>
+    </div>
+
+    <div class="search-bar"><span>&#128269;</span> <input placeholder="Search aliases..." readonly></div>
+
+    <table>
+      <thead><tr><th>Email</th><th>Service</th><th>Tags</th><th>Domain</th></tr></thead>
+      <tbody>
+        <tr><td>hello@acme.com</td><td>Acme Corp</td><td><span class="badge badge-blue">public</span> <span class="badge badge-green">active</span></td><td>acme.com</td></tr>
+        <tr><td>billing@shop.io</td><td>Shop</td><td><span class="badge badge-violet">finance</span> <span class="badge badge-red">urgent</span></td><td>shop.io</td></tr>
+        <tr><td>support@app.dev</td><td>App</td><td><span class="badge badge-blue">public</span></td><td>app.dev</td></tr>
+      </tbody>
+    </table>
+
+    <div class="flex-row">
+      <button class="btn btn-primary">+ New Alias</button>
+      <button class="btn btn-ghost">Quick Generate</button>
+      <button class="btn btn-danger">Delete</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!----------------------------------------------------------------- THEME 4 -->
+<div class="t4 section">
+<div class="page">
+  <div class="wrap">
+    <div class="page-title">Theme 4 &mdash; Cool Ocean</div>
+    <div class="page-sub">Deep navy base. Blue + cyan accents. High readability, calm professional feel.</div>
+
+    <div class="header">
+      <div class="logo"><div class="logo-icon" style="color:#0A1A24">P</div>Prismel</div>
+      <div class="nav">
+        <a href="#" class="active">Aliases</a>
+        <a href="#">Sync</a>
+        <a href="#">Settings</a>
+      </div>
+      <div class="header-actions">
+        <div class="avatar" style="background:#268BD2">TD</div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value">67</div></div>
+      <div class="stat-card"><div class="stat-label">Domains</div><div class="stat-value">4</div></div>
+      <div class="stat-card"><div class="stat-label">Active</div><div class="stat-value">52</div></div>
+      <div class="stat-card"><div class="stat-label">Tags</div><div class="stat-value">12</div></div>
+    </div>
+
+    <div class="search-bar"><span>&#128269;</span> <input placeholder="Search aliases..." readonly></div>
+
+    <table>
+      <thead><tr><th>Email</th><th>Service</th><th>Tags</th><th>Domain</th></tr></thead>
+      <tbody>
+        <tr><td>hello@acme.com</td><td>Acme Corp</td><td><span class="badge badge-blue">public</span> <span class="badge badge-green">active</span></td><td>acme.com</td></tr>
+        <tr><td>billing@shop.io</td><td>Shop</td><td><span class="badge badge-violet">finance</span> <span class="badge badge-red">urgent</span></td><td>shop.io</td></tr>
+        <tr><td>support@app.dev</td><td>App</td><td><span class="badge badge-blue">public</span></td><td>app.dev</td></tr>
+      </tbody>
+    </table>
+
+    <div class="flex-row">
+      <button class="btn btn-primary">+ New Alias</button>
+      <button class="btn btn-ghost">Quick Generate</button>
+      <button class="btn btn-danger">Delete</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!----------------------------------------------------------------- THEME 5 -->
+<div class="t5 section">
+<div class="page">
+  <div class="wrap">
+    <div class="page-title">Theme 5 &mdash; Muted Stone</div>
+    <div class="page-sub">Desaturated solarized light. Low contrast, gray-dominant. Understated professional.</div>
+
+    <div class="header">
+      <div class="logo"><div class="logo-icon" style="background:#586E75">P</div>Prismel</div>
+      <div class="nav">
+        <a href="#" class="active">Aliases</a>
+        <a href="#">Sync</a>
+        <a href="#">Settings</a>
+      </div>
+      <div class="header-actions">
+        <div class="avatar" style="background:#586E75">TD</div>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value">67</div></div>
+      <div class="stat-card"><div class="stat-label">Domains</div><div class="stat-value">4</div></div>
+      <div class="stat-card"><div class="stat-label">Active</div><div class="stat-value">52</div></div>
+      <div class="stat-card"><div class="stat-label">Tags</div><div class="stat-value">12</div></div>
+    </div>
+
+    <div class="search-bar"><span>&#128269;</span> <input placeholder="Search aliases..." readonly></div>
+
+    <table>
+      <thead><tr><th>Email</th><th>Service</th><th>Tags</th><th>Domain</th></tr></thead>
+      <tbody>
+        <tr><td>hello@acme.com</td><td>Acme Corp</td><td><span class="badge badge-blue">public</span> <span class="badge badge-green">active</span></td><td>acme.com</td></tr>
+        <tr><td>billing@shop.io</td><td>Shop</td><td><span class="badge badge-violet">finance</span> <span class="badge badge-red">urgent</span></td><td>shop.io</td></tr>
+        <tr><td>support@app.dev</td><td>App</td><td><span class="badge badge-blue">public</span></td><td>app.dev</td></tr>
+      </tbody>
+    </table>
+
+    <div class="flex-row">
+      <button class="btn btn-primary">+ New Alias</button>
+      <button class="btn btn-ghost">Quick Generate</button>
+      <button class="btn btn-danger">Delete</button>
+    </div>
+  </div>
+</div>
+</div>
+
+</body>
+</html>
