@@ -45,4 +45,15 @@ export const settingsService = {
         "",
     };
   },
+
+  getRedirectTargets(): string[] {
+    const raw = settingsRepository.get("redirect_targets");
+    if (!raw) return [];
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  },
 };

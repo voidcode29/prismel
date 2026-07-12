@@ -8,6 +8,7 @@ import {
   Server,
   Key,
   Loader2,
+  Mail,
 } from "lucide-react";
 
 interface SettingsData {
@@ -15,6 +16,7 @@ interface SettingsData {
   ovh_application_key: string;
   ovh_application_secret: string;
   ovh_consumer_key: string;
+  redirect_targets: string;
 }
 
 export function SettingsPage() {
@@ -23,12 +25,14 @@ export function SettingsPage() {
     ovh_application_key: "",
     ovh_application_secret: "",
     ovh_consumer_key: "",
+    redirect_targets: "[]",
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [showSecret, setShowSecret] = useState(false);
   const [showConsumer, setShowConsumer] = useState(false);
+  const [redirectTargets, setRedirectTargets] = useState("");
 
   useEffect(() => {
     fetch("/api/settings")
@@ -38,6 +42,12 @@ export function SettingsPage() {
       })
       .then((data: SettingsData) => {
         setSettings(data);
+        try {
+          const targets = JSON.parse(data.redirect_targets || "[]");
+          setRedirectTargets(Array.isArray(targets) ? targets.join("\n") : "");
+        } catch {
+          setRedirectTargets("");
+        }
       })
       .catch((e) => {
         setMessage({ type: "error", text: e instanceof Error ? e.message : "Failed to load settings" });
@@ -53,10 +63,18 @@ export function SettingsPage() {
     setSaving(true);
     setMessage(null);
     try {
+      const targets = redirectTargets
+        .split("\n")
+        .map((t) => t.trim())
+        .filter(Boolean);
+      const payload = {
+        ...settings,
+        redirect_targets: JSON.stringify(targets),
+      };
       const res = await fetch("/api/settings", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(settings),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: "Save failed" }));
@@ -194,6 +212,24 @@ export function SettingsPage() {
               {showConsumer ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
+        </div>
+
+        {/* Redirect Targets */}
+        <div className="pt-4 border-t border-slate-100">
+          <div className="flex items-center gap-2 mb-3">
+            <Mail className="w-4 h-4 text-slate-500" />
+            <h3 className="text-sm font-semibold text-slate-700">Redirect Targets</h3>
+          </div>
+          <p className="text-xs text-slate-500 mb-3">
+            One email address per line. These appear as suggestions when creating or editing an alias.
+          </p>
+          <textarea
+            value={redirectTargets}
+            onChange={(e) => setRedirectTargets(e.target.value)}
+            placeholder={"user@example.com\nother@domain.com"}
+            rows={6}
+            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition-all resize-y font-mono"
+          />
         </div>
 
         {/* Save Button */}
