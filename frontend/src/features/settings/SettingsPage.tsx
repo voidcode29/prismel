@@ -9,6 +9,9 @@ import {
   Key,
   Loader2,
   Mail,
+  Globe,
+  Plus,
+  Trash2,
 } from "lucide-react";
 
 interface SettingsData {
@@ -17,6 +20,8 @@ interface SettingsData {
   ovh_application_secret: string;
   ovh_consumer_key: string;
   redirect_targets: string;
+  alias_domains: string;
+  domain_providers: string;
 }
 
 export function SettingsPage() {
@@ -26,6 +31,8 @@ export function SettingsPage() {
     ovh_application_secret: "",
     ovh_consumer_key: "",
     redirect_targets: "[]",
+    alias_domains: "[]",
+    domain_providers: "{}",
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -33,6 +40,7 @@ export function SettingsPage() {
   const [showSecret, setShowSecret] = useState(false);
   const [showConsumer, setShowConsumer] = useState(false);
   const [redirectTargets, setRedirectTargets] = useState("");
+  const [domainPairs, setDomainPairs] = useState<{ domain: string; provider: string }[]>([]);
 
   useEffect(() => {
     fetch("/api/settings")
@@ -47,6 +55,15 @@ export function SettingsPage() {
           setRedirectTargets(Array.isArray(targets) ? targets.join("\n") : "");
         } catch {
           setRedirectTargets("");
+        }
+        try {
+          const domains = JSON.parse(data.alias_domains || "[]");
+          const providers = JSON.parse(data.domain_providers || "{}");
+          if (Array.isArray(domains)) {
+            setDomainPairs(domains.map((d: string) => ({ domain: d, provider: providers[d] || "" })));
+          }
+        } catch {
+          setDomainPairs([]);
         }
       })
       .catch((e) => {
@@ -67,9 +84,18 @@ export function SettingsPage() {
         .split("\n")
         .map((t) => t.trim())
         .filter(Boolean);
+      const domains = domainPairs.map((p) => p.domain.trim()).filter(Boolean);
+      const providers: Record<string, string> = {};
+      for (const p of domainPairs) {
+        if (p.domain.trim() && p.provider.trim()) {
+          providers[p.domain.trim()] = p.provider.trim();
+        }
+      }
       const payload = {
         ...settings,
         redirect_targets: JSON.stringify(targets),
+        alias_domains: JSON.stringify(domains),
+        domain_providers: JSON.stringify(providers),
       };
       const res = await fetch("/api/settings", {
         method: "PUT",
@@ -230,6 +256,60 @@ export function SettingsPage() {
             rows={6}
             className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition-all resize-y font-mono"
           />
+        </div>
+
+        {/* Domains & Providers */}
+        <div className="pt-4 border-t border-slate-100">
+          <div className="flex items-center gap-2 mb-3">
+            <Globe className="w-4 h-4 text-slate-500" />
+            <h3 className="text-sm font-semibold text-slate-700">Domains &amp; Providers</h3>
+          </div>
+          <p className="text-xs text-slate-500 mb-3">
+            Map each domain to its email provider. Used for alias generation and sync.
+          </p>
+          <div className="space-y-2">
+            {domainPairs.map((pair, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={pair.domain}
+                  onChange={(e) => {
+                    const next = [...domainPairs];
+                    next[i] = { ...next[i], domain: e.target.value };
+                    setDomainPairs(next);
+                  }}
+                  placeholder="domain.com"
+                  className="flex-1 px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition-all"
+                />
+                <input
+                  type="text"
+                  value={pair.provider}
+                  onChange={(e) => {
+                    const next = [...domainPairs];
+                    next[i] = { ...next[i], provider: e.target.value };
+                    setDomainPairs(next);
+                  }}
+                  placeholder="provider"
+                  className="w-24 px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => setDomainPairs(domainPairs.filter((_, j) => j !== i))}
+                  className="p-2 text-slate-400 hover:text-red-500 rounded-lg transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => setDomainPairs([...domainPairs, { domain: "", provider: "" }])}
+            className="mt-3 px-3 py-1.5 text-xs font-medium text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors flex items-center gap-1"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            Add Domain
+          </button>
         </div>
 
         {/* Save Button */}

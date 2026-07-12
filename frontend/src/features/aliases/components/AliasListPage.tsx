@@ -12,10 +12,9 @@ import {
   Tag,
 } from "lucide-react";
 import { api } from "../../../lib/api";
-import { CreateAliasModal } from "./CreateAliasModal";
 import { QuickGenerateModal } from "./QuickGenerateModal";
 import { DeleteConfirmModal } from "./DeleteConfirmModal";
-import { EditAliasModal } from "./EditAliasModal";
+import { AliasFormModal } from "./AliasFormModal";
 
 const TAG_COLORS: Record<string, string> = {
   public: "bg-blue-50 text-blue-700 border-blue-100",
@@ -86,13 +85,13 @@ export function AliasListPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [formModalOpen, setFormModalOpen] = useState(false);
+  const [formModalMode, setFormModalMode] = useState<"create" | "edit">("create");
   const [generateModalOpen, setGenerateModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [aliasToDelete, setAliasToDelete] = useState<Alias | null>(null);
-  const [editModalOpen, setEditModalOpen] = useState(false);
   const [aliasToEdit, setAliasToEdit] = useState<Alias | null>(null);
-  const [editModalVisible, setEditModalVisible] = useState(true);
+  const [formModalVisible, setFormModalVisible] = useState(true);
 
   const fetchAliases = async () => {
     setLoading(true);
@@ -140,8 +139,9 @@ export function AliasListPage() {
 
   const openEdit = (alias: Alias) => {
     setAliasToEdit(alias);
-    setEditModalOpen(true);
-    setEditModalVisible(true);
+    setFormModalMode("edit");
+    setFormModalOpen(true);
+    setFormModalVisible(true);
   };
 
   if (loading) {
@@ -189,7 +189,11 @@ export function AliasListPage() {
             Quick Generate
           </button>
           <button
-            onClick={() => setCreateModalOpen(true)}
+            onClick={() => {
+              setFormModalMode("create");
+              setAliasToEdit(null);
+              setFormModalOpen(true);
+            }}
             className="px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-all flex items-center gap-2 shadow-lg shadow-indigo-500/25"
           >
             <Plus className="w-4 h-4" />
@@ -276,7 +280,11 @@ export function AliasListPage() {
           </p>
           <div className="flex items-center justify-center gap-3">
             <button
-              onClick={() => setCreateModalOpen(true)}
+              onClick={() => {
+                setFormModalMode("create");
+                setAliasToEdit(null);
+                setFormModalOpen(true);
+              }}
               className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-medium hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/25"
             >
               Create Alias
@@ -366,10 +374,26 @@ export function AliasListPage() {
         </div>
       )}
 
-      <CreateAliasModal
-        open={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        onCreated={fetchAliases}
+      <AliasFormModal
+        open={formModalOpen}
+        mode={formModalMode}
+        alias={aliasToEdit}
+        visible={formModalVisible}
+        onClose={() => {
+          setFormModalOpen(false);
+          setAliasToEdit(null);
+        }}
+        onSaved={fetchAliases}
+        onDelete={
+          formModalMode === "edit"
+            ? () => {
+                if (aliasToEdit) {
+                  setFormModalVisible(false);
+                  openDelete(aliasToEdit);
+                }
+              }
+            : undefined
+        }
       />
       <QuickGenerateModal
         open={generateModalOpen}
@@ -380,30 +404,14 @@ export function AliasListPage() {
         open={deleteModalOpen}
         alias={aliasToDelete}
         onClose={() => {
-          setEditModalVisible(true);
+          setFormModalVisible(true);
           setDeleteModalOpen(false);
           setAliasToDelete(null);
         }}
         onDeleted={() => {
           fetchAliases();
-          setEditModalOpen(false);
+          setFormModalOpen(false);
           setAliasToEdit(null);
-        }}
-      />
-      <EditAliasModal
-        open={editModalOpen}
-        alias={aliasToEdit}
-        visible={editModalVisible}
-        onClose={() => {
-          setEditModalOpen(false);
-          setAliasToEdit(null);
-        }}
-        onUpdated={fetchAliases}
-        onDelete={() => {
-          if (aliasToEdit) {
-            setEditModalVisible(false);
-            openDelete(aliasToEdit);
-          }
         }}
       />
     </div>
