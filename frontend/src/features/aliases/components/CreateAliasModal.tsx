@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Alias, CreateAliasInput } from "@prismel/shared";
 import { X, RefreshCw } from "lucide-react";
 import { api } from "../../../lib/api";
@@ -12,11 +12,19 @@ interface CreateAliasModalProps {
 export function CreateAliasModal({ open, onClose, onCreated }: CreateAliasModalProps) {
   const [prefix, setPrefix] = useState("");
   const [domain, setDomain] = useState("tical.fr");
+  const [destination, setDestination] = useState("");
   const [serviceName, setServiceName] = useState("");
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
   const [generated, setGenerated] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (open) {
+      setError(null);
+    }
+  }, [open]);
 
   if (!open) return null;
 
@@ -42,10 +50,12 @@ export function CreateAliasModal({ open, onClose, onCreated }: CreateAliasModalP
     e.preventDefault();
     if (!prefix.trim()) return;
     setSubmitting(true);
+    setError(null);
     try {
       const input: CreateAliasInput = {
         email: `${prefix.trim()}@${domain}`,
         domain,
+        destination: destination.trim() || undefined,
         serviceName: serviceName.trim() || undefined,
         description: description.trim() || undefined,
         tags: tags
@@ -55,14 +65,15 @@ export function CreateAliasModal({ open, onClose, onCreated }: CreateAliasModalP
       };
       await api.createAlias(input);
       setPrefix("");
+      setDestination("");
       setServiceName("");
       setDescription("");
       setTags("");
       setGenerated("");
       onCreated();
       onClose();
-    } catch {
-      // error handled by caller via toast or similar
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to create alias");
     } finally {
       setSubmitting(false);
     }
@@ -84,6 +95,11 @@ export function CreateAliasModal({ open, onClose, onCreated }: CreateAliasModalP
           </button>
         </div>
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
+          {error && (
+            <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+              {error}
+            </div>
+          )}
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
             <div className="flex shadow-sm">
@@ -103,6 +119,16 @@ export function CreateAliasModal({ open, onClose, onCreated }: CreateAliasModalP
                 <option value="marzin.org">@marzin.org</option>
               </select>
             </div>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Redirect To</label>
+            <input
+              type="email"
+              value={destination}
+              onChange={(e) => setDestination(e.target.value)}
+              placeholder="your-real@email.com (defaults to alias itself)"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition-all"
+            />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>

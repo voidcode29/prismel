@@ -24,6 +24,7 @@ export interface CreateAliasInput {
 
 export interface UpdateAliasInput {
   email?: string;
+  destination?: string;
   serviceName?: string;
   description?: string;
   tags?: string[];

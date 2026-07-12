@@ -12,6 +12,7 @@ interface EditAliasModalProps {
 
 export function EditAliasModal({ open, alias, onClose, onUpdated }: EditAliasModalProps) {
   const [serviceName, setServiceName] = useState("");
+  const [destination, setDestination] = useState("");
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -19,6 +20,7 @@ export function EditAliasModal({ open, alias, onClose, onUpdated }: EditAliasMod
   useEffect(() => {
     if (alias) {
       setServiceName(alias.serviceName || "");
+      setDestination(alias.destination || "");
       setDescription(alias.description || "");
       setTags(alias.tags.join(", "));
     }
@@ -31,6 +33,7 @@ export function EditAliasModal({ open, alias, onClose, onUpdated }: EditAliasMod
     setSubmitting(true);
     try {
       const input: UpdateAliasInput = {
+        destination: destination.trim() || undefined,
         serviceName: serviceName.trim() || undefined,
         description: description.trim() || undefined,
         tags: tags
@@ -69,6 +72,16 @@ export function EditAliasModal({ open, alias, onClose, onUpdated }: EditAliasMod
             <div className="px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-sm text-slate-600 font-mono">
               {alias.email}
             </div>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Redirect To</label>
+            <input
+              type="email"
+              value={destination}
+              onChange={(e) => setDestination(e.target.value)}
+              placeholder="your-real@email.com"
+              className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition-all"
+            />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>

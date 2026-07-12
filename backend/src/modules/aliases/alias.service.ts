@@ -54,6 +54,19 @@ export const aliasService = {
     const existing = aliasRepository.findById(id);
     if (!existing) return undefined;
 
+    // Push destination change to OVH if destination changed
+    if (input.destination && input.destination !== existing.destination && existing.providerId) {
+      try {
+        await ovhClient.request(
+          "PUT",
+          `/email/domain/${existing.domain}/redirection/${existing.providerId}`,
+          { to: input.destination },
+        );
+      } catch (e) {
+        throw new Error(`OVH update redirection failed: ${(e as Error).message}`);
+      }
+    }
+
     const updated = aliasRepository.update(id, {
       ...input,
       updatedAt: new Date().toISOString(),
