@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { ALIAS_DOMAINS } from "@prismel/shared";
 import type { CreateAliasInput } from "@prismel/shared";
 import { X, RefreshCw } from "lucide-react";
 import { api } from "../../../lib/api";
@@ -10,7 +11,7 @@ interface QuickGenerateModalProps {
 }
 
 export function QuickGenerateModal({ open, onClose, onCreated }: QuickGenerateModalProps) {
-  const [domain, setDomain] = useState("tical.fr");
+  const [domain, setDomain] = useState<string>(ALIAS_DOMAINS[0] || "");
   const [serviceName, setServiceName] = useState("");
   const [generated, setGenerated] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -99,10 +100,11 @@ export function QuickGenerateModal({ open, onClose, onCreated }: QuickGenerateMo
                 setGenerated("");
               }}
               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none"
-            >
-              <option value="tical.fr">tical.fr</option>
-              <option value="marzin.org">marzin.org</option>
-            </select>
+              >
+                {ALIAS_DOMAINS.map((d) => (
+                  <option key={d} value={d}>{d}</option>
+                ))}
+              </select>
           </div>
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-2">

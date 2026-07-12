@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { ALIAS_DOMAINS } from "@prismel/shared";
 import type { Alias, CreateAliasInput } from "@prismel/shared";
 import { X, RefreshCw } from "lucide-react";
 import { api } from "../../../lib/api";
@@ -11,7 +12,7 @@ interface CreateAliasModalProps {
 
 export function CreateAliasModal({ open, onClose, onCreated }: CreateAliasModalProps) {
   const [prefix, setPrefix] = useState("");
-  const [domain, setDomain] = useState("tical.fr");
+  const [domain, setDomain] = useState<string>(ALIAS_DOMAINS[0] || "");
   const [destination, setDestination] = useState("");
   const [serviceName, setServiceName] = useState("");
   const [description, setDescription] = useState("");
@@ -110,14 +111,15 @@ export function CreateAliasModal({ open, onClose, onCreated }: CreateAliasModalP
                 placeholder="alias-name"
                 className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-l-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition-all"
               />
-              <select
-                value={domain}
-                onChange={(e) => setDomain(e.target.value)}
-                className="px-4 py-2.5 border border-l-0 border-slate-300 rounded-r-xl bg-slate-50 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none min-w-[140px]"
-              >
-                <option value="tical.fr">@tical.fr</option>
-                <option value="marzin.org">@marzin.org</option>
-              </select>
+                <select
+                  value={domain}
+                  onChange={(e) => setDomain(e.target.value)}
+                  className="px-4 py-2.5 border border-l-0 border-slate-300 rounded-r-xl bg-slate-50 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none min-w-[140px]"
+                >
+                  {ALIAS_DOMAINS.map((d) => (
+                    <option key={d} value={d}>@{d}</option>
+                  ))}
+                </select>
             </div>
           </div>
           <div>
@@ -143,11 +145,8 @@ export function CreateAliasModal({ open, onClose, onCreated }: CreateAliasModalP
             </div>
             <div>
               <label className="block text-sm font-semibold text-slate-700 mb-2">Provider</label>
-              <div className="px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-sm text-slate-600 flex items-center gap-2">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
-                </svg>
-                OVH
+              <div className="px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-sm text-slate-500">
+                Auto-detected
               </div>
             </div>
           </div>

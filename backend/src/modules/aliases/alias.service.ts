@@ -21,7 +21,7 @@ export const aliasService = {
     const [, domain] = input.email.split("@");
     const destination = input.destination || input.email;
 
-    // Create redirection at OVH
+    // Create redirection at provider
     try {
       await ovhClient.request("POST", `/email/domain/${domain}/redirection`, {
         from: input.email,
@@ -29,7 +29,7 @@ export const aliasService = {
         localCopy: false,
       });
     } catch (e) {
-      throw new Error(`OVH create redirection failed: ${(e as Error).message}`);
+      throw new Error(`Provider create redirection failed: ${(e as Error).message}`);
     }
 
     const now = new Date().toISOString();
@@ -54,7 +54,7 @@ export const aliasService = {
     const existing = aliasRepository.findById(id);
     if (!existing) return undefined;
 
-    // Push destination change to OVH if destination changed
+    // Push destination change to provider if destination changed
     if (input.destination && input.destination !== existing.destination && existing.providerId) {
       try {
         await ovhClient.request(
@@ -63,7 +63,7 @@ export const aliasService = {
           { to: input.destination },
         );
       } catch (e) {
-        throw new Error(`OVH update redirection failed: ${(e as Error).message}`);
+        throw new Error(`Provider update redirection failed: ${(e as Error).message}`);
       }
     }
 
@@ -142,7 +142,7 @@ export const aliasService = {
         continue;
       }
 
-      // OVH provider sync
+      // Provider sync
       log(`│  Endpoint: /email/domain/${domain}/redirection`);
 
       try {

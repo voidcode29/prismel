@@ -53,7 +53,7 @@ export function SyncPage() {
       {/* Page Title */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-slate-900">Sync Aliases</h1>
-        <p className="text-sm text-slate-500 mt-1">Synchronize with OVH provider</p>
+        <p className="text-sm text-slate-500 mt-1">Synchronize with configured providers</p>
       </div>
 
       {/* Stats Bar */}
@@ -75,7 +75,7 @@ export function SyncPage() {
           </div>
           <div>
             <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Provider</div>
-            <div className="text-2xl font-bold text-slate-900 mt-0.5">OVH</div>
+            <div className="text-2xl font-bold text-slate-900 mt-0.5">—</div>
           </div>
         </div>
       </div>
@@ -84,9 +84,9 @@ export function SyncPage() {
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 mb-8">
         <h3 className="text-sm font-semibold text-slate-900 mb-2">What does sync do?</h3>
         <p className="text-sm text-slate-500 leading-relaxed">
-          Sync pulls all email aliases from your OVH MX Plan account and imports them into Prismel.
+          Sync pulls all email aliases from your configured providers and imports them into Prismel.
           New aliases are added, existing ones are updated, and any local discrepancies are resolved.
-          This ensures your local database stays in perfect sync with the provider.
+          This ensures your local database stays in perfect sync with your providers.
         </p>
       </div>
 

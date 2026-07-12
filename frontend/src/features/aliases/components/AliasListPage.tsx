@@ -316,7 +316,6 @@ export function AliasListPage() {
                         </div>
                         <div>
                           <div className="font-semibold text-slate-900">{alias.email}</div>
-                          <div className="text-xs text-slate-500">OVH provider</div>
                         </div>
                       </div>
                     </td>

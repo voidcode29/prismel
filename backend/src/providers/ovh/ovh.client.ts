@@ -44,7 +44,7 @@ export class OvhClient {
 
       if (!response.ok) {
         const error = await response.text();
-        throw new Error(`OVH API error: ${response.status} ${error}`);
+        throw new Error(`Provider API error: ${response.status} ${error}`);
       }
 
       return response.json();
