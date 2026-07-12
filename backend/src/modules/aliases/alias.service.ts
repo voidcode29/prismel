@@ -68,10 +68,13 @@ export const aliasService = {
       }
     }
 
-    const updated = aliasRepository.update(id, {
-      ...input,
-      updatedAt: new Date().toISOString(),
-    });
+    const data: Record<string, unknown> = { updatedAt: new Date().toISOString() };
+    if (input.destination !== undefined) data.destination = input.destination || null;
+    if (input.serviceName !== undefined) data.serviceName = input.serviceName || null;
+    if (input.description !== undefined) data.description = input.description || null;
+    if (input.tags !== undefined) data.tags = input.tags;
+
+    const updated = aliasRepository.update(id, data as Partial<Alias>);
 
     return updated;
   },

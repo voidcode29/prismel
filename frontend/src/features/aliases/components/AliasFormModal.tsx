@@ -99,9 +99,9 @@ export function AliasFormModal({
     try {
       if (isEdit && alias) {
         const input: UpdateAliasInput = {
-          destination: destination.trim() || undefined,
-          serviceName: serviceName.trim() || undefined,
-          description: description.trim() || undefined,
+          destination: destination.trim(),
+          serviceName: serviceName.trim(),
+          description: description.trim(),
           tags: tags
             .split(",")
             .map((t) => t.trim())
