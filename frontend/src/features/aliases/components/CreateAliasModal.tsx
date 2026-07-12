@@ -17,7 +17,6 @@ export function CreateAliasModal({ open, onClose, onCreated }: CreateAliasModalP
   const [serviceName, setServiceName] = useState("");
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
-  const [generated, setGenerated] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,17 +32,8 @@ export function CreateAliasModal({ open, onClose, onCreated }: CreateAliasModalP
     try {
       const result = await api.generateAlias(domain);
       setPrefix(result.prefix);
-      setGenerated(result.email);
-    } catch {
-      // fallback client-side generation
-      const words = ["green", "silent", "rapid", "bright", "cool", "happy", "swift", "lucky", "wild", "calm"];
-      const nouns = ["river", "otter", "mountain", "forest", "star", "wave", "bird", "tree", "cloud", "stone"];
-      const word = words[Math.floor(Math.random() * words.length)];
-      const noun = nouns[Math.floor(Math.random() * nouns.length)];
-      const num = Math.floor(Math.random() * 900) + 100;
-      const alias = `${word}-${noun}-${num}`;
-      setPrefix(alias);
-      setGenerated(`${alias}@${domain}`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to generate alias");
     }
   };
 
@@ -70,7 +60,6 @@ export function CreateAliasModal({ open, onClose, onCreated }: CreateAliasModalP
       setServiceName("");
       setDescription("");
       setTags("");
-      setGenerated("");
       onCreated();
       onClose();
     } catch (e) {
@@ -103,14 +92,15 @@ export function CreateAliasModal({ open, onClose, onCreated }: CreateAliasModalP
           )}
           <div>
             <label className="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
-            <div className="flex shadow-sm">
-              <input
-                type="text"
-                value={prefix}
-                onChange={(e) => setPrefix(e.target.value)}
-                placeholder="alias-name"
-                className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-l-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition-all"
-              />
+            <div className="flex items-center gap-2">
+              <div className="flex flex-1 shadow-sm">
+                <input
+                  type="text"
+                  value={prefix}
+                  onChange={(e) => setPrefix(e.target.value)}
+                  placeholder="alias-name"
+                  className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-l-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition-all"
+                />
                 <select
                   value={domain}
                   onChange={(e) => setDomain(e.target.value)}
@@ -120,6 +110,15 @@ export function CreateAliasModal({ open, onClose, onCreated }: CreateAliasModalP
                     <option key={d} value={d}>@{d}</option>
                   ))}
                 </select>
+              </div>
+              <button
+                type="button"
+                onClick={handleGenerate}
+                title="Generate"
+                className="p-2.5 bg-slate-100 text-slate-600 rounded-xl hover:bg-slate-200 transition-colors flex-shrink-0"
+              >
+                <RefreshCw className="w-4 h-4" />
+              </button>
             </div>
           </div>
           <div>
@@ -170,19 +169,6 @@ export function CreateAliasModal({ open, onClose, onCreated }: CreateAliasModalP
               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition-all"
             />
             <p className="text-xs text-slate-400 mt-1.5">Separate tags with commas</p>
-          </div>
-          <div className="flex items-center gap-3 pt-2">
-            <button
-              type="button"
-              onClick={handleGenerate}
-              className="px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-200 transition-colors flex items-center gap-2"
-            >
-              <RefreshCw className="w-4 h-4" />
-              Generate Random
-            </button>
-            {generated && (
-              <span className="text-sm text-indigo-600 font-mono font-medium">{generated}</span>
-            )}
           </div>
           <div className="px-6 py-5 border-t border-slate-100 bg-slate-50 rounded-b-2xl -mx-6 -mb-6 mt-6 flex justify-end gap-3">
             <button

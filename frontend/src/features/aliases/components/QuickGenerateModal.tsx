@@ -29,13 +29,8 @@ export function QuickGenerateModal({ open, onClose, onCreated }: QuickGenerateMo
     try {
       const result = await api.generateAlias(domain);
       setGenerated(result.email);
-    } catch {
-      const words = ["green", "silent", "rapid", "bright", "cool", "happy", "swift", "lucky", "wild", "calm"];
-      const nouns = ["river", "otter", "mountain", "forest", "star", "wave", "bird", "tree", "cloud", "stone"];
-      const word = words[Math.floor(Math.random() * words.length)];
-      const noun = nouns[Math.floor(Math.random() * nouns.length)];
-      const num = Math.floor(Math.random() * 900) + 100;
-      setGenerated(`${word}-${noun}-${num}@${domain}`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to generate alias");
     }
   };
 
