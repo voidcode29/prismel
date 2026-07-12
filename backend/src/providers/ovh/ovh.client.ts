@@ -1,6 +1,15 @@
 import { settingsService } from "../../modules/settings/settings.service";
 import crypto from "crypto";
 
+export class OvhApiError extends Error {
+  status: number;
+  constructor(status: number, body: string) {
+    super(`Provider API error: ${status} ${body}`);
+    this.name = "OvhApiError";
+    this.status = status;
+  }
+}
+
 export class OvhClient {
   private get baseUrl(): string {
     const cfg = settingsService.getOvhConfig();
@@ -44,7 +53,7 @@ export class OvhClient {
 
       if (!response.ok) {
         const error = await response.text();
-        throw new Error(`Provider API error: ${response.status} ${error}`);
+        throw new OvhApiError(response.status, error);
       }
 
       return response.json();

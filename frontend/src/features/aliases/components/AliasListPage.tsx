@@ -5,8 +5,6 @@ import {
   Search,
   Filter,
   ArrowUpDown,
-  Edit,
-  Trash2,
   Plus,
   Zap,
   Globe,
@@ -94,6 +92,7 @@ export function AliasListPage() {
   const [aliasToDelete, setAliasToDelete] = useState<Alias | null>(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [aliasToEdit, setAliasToEdit] = useState<Alias | null>(null);
+  const [editModalVisible, setEditModalVisible] = useState(true);
 
   const fetchAliases = async () => {
     setLoading(true);
@@ -142,6 +141,7 @@ export function AliasListPage() {
   const openEdit = (alias: Alias) => {
     setAliasToEdit(alias);
     setEditModalOpen(true);
+    setEditModalVisible(true);
   };
 
   if (loading) {
@@ -300,14 +300,14 @@ export function AliasListPage() {
                   <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Tags</th>
                   <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Domain</th>
                   <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Created</th>
-                  <th className="px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
                 {filteredAliases.map((alias) => (
                   <tr
                     key={alias.id}
-                    className="hover:bg-slate-50/60 transition-colors group"
+                    onClick={() => openEdit(alias)}
+                    className="hover:bg-slate-50/60 transition-colors cursor-pointer"
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
@@ -345,24 +345,6 @@ export function AliasListPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-slate-500 text-xs">{formatDate(alias.createdAt)}</td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button
-                          onClick={() => openEdit(alias)}
-                          className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                          title="Edit"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => openDelete(alias)}
-                          className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                          title="Delete"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -398,19 +380,31 @@ export function AliasListPage() {
         open={deleteModalOpen}
         alias={aliasToDelete}
         onClose={() => {
+          setEditModalVisible(true);
           setDeleteModalOpen(false);
           setAliasToDelete(null);
         }}
-        onDeleted={fetchAliases}
+        onDeleted={() => {
+          fetchAliases();
+          setEditModalOpen(false);
+          setAliasToEdit(null);
+        }}
       />
       <EditAliasModal
         open={editModalOpen}
         alias={aliasToEdit}
+        visible={editModalVisible}
         onClose={() => {
           setEditModalOpen(false);
           setAliasToEdit(null);
         }}
         onUpdated={fetchAliases}
+        onDelete={() => {
+          if (aliasToEdit) {
+            setEditModalVisible(false);
+            openDelete(aliasToEdit);
+          }
+        }}
       />
     </div>
   );

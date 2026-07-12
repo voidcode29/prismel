@@ -1,5 +1,5 @@
 import { aliasRepository } from "./alias.repository";
-import { OvhClient } from "../../providers/ovh/ovh.client";
+import { OvhClient, OvhApiError } from "../../providers/ovh/ovh.client";
 import { mapRedirectionToAlias, type OvhRedirection } from "../../providers/ovh/ovh.mapper";
 import type { Alias, CreateAliasInput, UpdateAliasInput, GeneratedAlias, SyncResult } from "@prismel/shared";
 import { generateAlias, isDomainValid } from "./alias.generator";
@@ -21,13 +21,30 @@ export const aliasService = {
     const [, domain] = input.email.split("@");
     const destination = input.destination || input.email;
 
+    let ovhRedirectionId: string;
+
     // Create redirection at provider
     try {
-      await ovhClient.request("POST", `/email/domain/${domain}/redirection`, {
-        from: input.email,
-        to: destination,
-        localCopy: false,
-      });
+      await ovhClient.request(
+        "POST",
+        `/email/domain/${domain}/redirection`,
+        {
+          from: input.email,
+          to: destination,
+          localCopy: false,
+        },
+      );
+
+      // OVH POST returns a task object, not the redirection itself.
+      // Fetch the redirection list (filtered by from) to get the real ID.
+      const redirIds = await ovhClient.request<number[]>(
+        "GET",
+        `/email/domain/${domain}/redirection?from=${encodeURIComponent(input.email)}`,
+      );
+      if (!redirIds || redirIds.length === 0) {
+        throw new Error("Redirection created but not found in provider listing");
+      }
+      ovhRedirectionId = String(redirIds[0]);
     } catch (e) {
       throw new Error(`Provider create redirection failed: ${(e as Error).message}`);
     }
@@ -37,7 +54,7 @@ export const aliasService = {
       id: crypto.randomUUID(),
       email: input.email,
       provider: "ovh",
-      providerId: "", // will be set on next sync
+      providerId: ovhRedirectionId,
       domain: input.domain,
       destination,
       serviceName: input.serviceName,
@@ -95,8 +112,14 @@ export const aliasService = {
         // Still exists — deletion didn't take effect
         throw new Error(`Redirection ${alias.providerId} still exists after delete`);
       } catch (e) {
-        if ((e as Error).message.includes("still exists")) throw e;
-        // Expected: GET returns 404 after successful delete
+        if (e instanceof OvhApiError && e.status === 404) {
+          // Expected: 404 confirms deletion
+        } else if ((e as Error).message.includes("still exists")) {
+          throw e;
+        } else {
+          // Unexpected error (network, auth, etc.) — don't assume deletion succeeded
+          throw e;
+        }
       }
     }
 
