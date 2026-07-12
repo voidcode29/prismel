@@ -3,7 +3,7 @@ import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 export const aliases = sqliteTable("aliases", {
   id: text("id").primaryKey(),
   email: text("email").notNull().unique(),
-  provider: text("provider").notNull().default("ovh"),
+  provider: text("provider").notNull(),
   providerId: text("provider_id").notNull(),
   domain: text("domain").notNull(),
   destination: text("destination"),

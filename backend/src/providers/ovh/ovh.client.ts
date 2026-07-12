@@ -1,4 +1,4 @@
-import { settingsService } from "../../modules/settings/settings.service";
+import { getOvhConfig } from "./config";
 import crypto from "crypto";
 
 export class OvhApiError extends Error {
@@ -12,12 +12,12 @@ export class OvhApiError extends Error {
 
 export class OvhClient {
   private get baseUrl(): string {
-    const cfg = settingsService.getOvhConfig();
+    const cfg = getOvhConfig();
     return `https://${cfg.endpoint}/1.0`;
   }
 
   private sign(method: string, path: string, body: string): string {
-    const cfg = settingsService.getOvhConfig();
+    const cfg = getOvhConfig();
     const timestamp = Math.floor(Date.now() / 1000).toString();
     const signature = crypto
       .createHash("sha1")
@@ -29,7 +29,7 @@ export class OvhClient {
   }
 
   async request<T>(method: string, path: string, body?: unknown): Promise<T> {
-    const cfg = settingsService.getOvhConfig();
+    const cfg = getOvhConfig();
     const bodyStr = body ? JSON.stringify(body) : "";
     const signature = this.sign(method, path, bodyStr);
     const timestamp = Math.floor(Date.now() / 1000).toString();

@@ -12,7 +12,7 @@ export function mapRedirectionToAlias(domain: string, redir: OvhRedirection): Al
   return {
     id: crypto.randomUUID(),
     email: redir.from,
-    provider: "ovh",
+    provider: "OVH",
     providerId: String(redir.id),
     domain,
     destination: redir.to,

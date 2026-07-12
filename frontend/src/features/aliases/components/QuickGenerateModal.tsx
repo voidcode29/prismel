@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { ALIAS_DOMAINS } from "@prismel/shared";
 import type { CreateAliasInput } from "@prismel/shared";
 import { X, RefreshCw } from "lucide-react";
 import { api } from "../../../lib/api";
@@ -11,15 +10,31 @@ interface QuickGenerateModalProps {
 }
 
 export function QuickGenerateModal({ open, onClose, onCreated }: QuickGenerateModalProps) {
-  const [domain, setDomain] = useState<string>(ALIAS_DOMAINS[0] || "");
+  const [domain, setDomain] = useState<string>("");
   const [serviceName, setServiceName] = useState("");
   const [generated, setGenerated] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [domains, setDomains] = useState<string[]>([]);
 
   useEffect(() => {
     if (open) {
       setError(null);
+      fetch("/api/settings")
+        .then((r) => r.json())
+        .then((data) => {
+          try {
+            const domainList = JSON.parse(data.alias_domains || "[]");
+            const list = Array.isArray(domainList) ? domainList : [];
+            setDomains(list);
+            if (!domain && list.length > 0) {
+              setDomain(list[0]);
+            }
+          } catch {
+            setDomains([]);
+          }
+        })
+        .catch(() => setDomains([]));
     }
   }, [open]);
 
@@ -96,7 +111,7 @@ export function QuickGenerateModal({ open, onClose, onCreated }: QuickGenerateMo
               }}
               className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none"
               >
-                {ALIAS_DOMAINS.map((d) => (
+                {domains.map((d) => (
                   <option key={d} value={d}>{d}</option>
                 ))}
               </select>

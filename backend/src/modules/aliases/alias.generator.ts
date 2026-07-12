@@ -1,5 +1,5 @@
-import { ALIAS_DOMAINS } from "@prismel/shared";
 import type { GeneratedAlias } from "@prismel/shared";
+import { settingsService } from "../settings/settings.service";
 
 // ── English adjectives ──────────────────────────────────────────────────────
 const en_adjectives = [
@@ -213,5 +213,5 @@ export function generateAlias(domain: string): GeneratedAlias {
 }
 
 export function isDomainValid(domain: string): boolean {
-  return ALIAS_DOMAINS.includes(domain as never);
+  return settingsService.getDomains().includes(domain);
 }

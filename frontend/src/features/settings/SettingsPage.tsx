@@ -1,55 +1,39 @@
 import { useState, useEffect } from "react";
 import {
-  Eye,
-  EyeOff,
   Save,
   CheckCircle2,
   AlertTriangle,
   Server,
-  Key,
   Loader2,
   Mail,
   Globe,
   Plus,
   Trash2,
 } from "lucide-react";
+import { getProviderForm } from "../../providers/registry";
 
 interface SettingsData {
-  ovh_endpoint: string;
-  ovh_application_key: string;
-  ovh_application_secret: string;
-  ovh_consumer_key: string;
-  redirect_targets: string;
-  alias_domains: string;
-  domain_providers: string;
+  [key: string]: string;
 }
 
 export function SettingsPage() {
-  const [settings, setSettings] = useState<SettingsData>({
-    ovh_endpoint: "",
-    ovh_application_key: "",
-    ovh_application_secret: "",
-    ovh_consumer_key: "",
-    redirect_targets: "[]",
-    alias_domains: "[]",
-    domain_providers: "{}",
-  });
+  const [settings, setSettings] = useState<SettingsData>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
-  const [showSecret, setShowSecret] = useState(false);
-  const [showConsumer, setShowConsumer] = useState(false);
   const [redirectTargets, setRedirectTargets] = useState("");
   const [domainPairs, setDomainPairs] = useState<{ domain: string; provider: string }[]>([]);
+  const [selectedProvider, setSelectedProvider] = useState("");
+  const [providerList, setProviderList] = useState<string[]>([]);
 
   useEffect(() => {
-    fetch("/api/settings")
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to load settings");
-        return res.json();
-      })
-      .then((data: SettingsData) => {
+    Promise.all([
+      fetch("/api/settings").then((r) => r.json()),
+      fetch("/api/settings/providers").then((r) => r.json()),
+    ])
+      .then(([data, providers]: [SettingsData, string[]]) => {
         setSettings(data);
+        setProviderList(providers);
         try {
           const targets = JSON.parse(data.redirect_targets || "[]");
           setRedirectTargets(Array.isArray(targets) ? targets.join("\n") : "");
@@ -58,9 +42,9 @@ export function SettingsPage() {
         }
         try {
           const domains = JSON.parse(data.alias_domains || "[]");
-          const providers = JSON.parse(data.domain_providers || "{}");
+          const domainProviders = JSON.parse(data.domain_providers || "{}");
           if (Array.isArray(domains)) {
-            setDomainPairs(domains.map((d: string) => ({ domain: d, provider: providers[d] || "" })));
+            setDomainPairs(domains.map((d: string) => ({ domain: d, provider: domainProviders[d] || "" })));
           }
         } catch {
           setDomainPairs([]);
@@ -72,7 +56,7 @@ export function SettingsPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleChange = (field: keyof SettingsData, value: string) => {
+  const handleChange = (field: string, value: string) => {
     setSettings((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -85,17 +69,17 @@ export function SettingsPage() {
         .map((t) => t.trim())
         .filter(Boolean);
       const domains = domainPairs.map((p) => p.domain.trim()).filter(Boolean);
-      const providers: Record<string, string> = {};
+      const providersObj: Record<string, string> = {};
       for (const p of domainPairs) {
         if (p.domain.trim() && p.provider.trim()) {
-          providers[p.domain.trim()] = p.provider.trim();
+          providersObj[p.domain.trim()] = p.provider.trim();
         }
       }
       const payload = {
         ...settings,
         redirect_targets: JSON.stringify(targets),
         alias_domains: JSON.stringify(domains),
-        domain_providers: JSON.stringify(providers),
+        domain_providers: JSON.stringify(providersObj),
       };
       const res = await fetch("/api/settings", {
         method: "PUT",
@@ -125,15 +109,15 @@ export function SettingsPage() {
     );
   }
 
+  const SelectedForm = selectedProvider ? getProviderForm(selectedProvider) : null;
+
   return (
-    <div className="max-w-2xl">
-      {/* Page Title */}
+    <div className="max-w-5xl">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-slate-900">Settings</h1>
-        <p className="text-sm text-slate-500 mt-1">Manage provider configuration</p>
+        <p className="text-sm text-slate-500 mt-1">Manage domains, providers and redirect targets</p>
       </div>
 
-      {/* Message Banner */}
       {message && (
         <div
           className={`rounded-xl p-4 mb-6 flex items-start gap-3 ${
@@ -147,177 +131,113 @@ export function SettingsPage() {
           ) : (
             <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
           )}
-          <p
-            className={`text-sm font-medium ${
-              message.type === "success" ? "text-emerald-800" : "text-red-800"
-            }`}
-          >
+          <p className={`text-sm font-medium ${message.type === "success" ? "text-emerald-800" : "text-red-800"}`}>
             {message.text}
           </p>
         </div>
       )}
 
-      {/* Provider Card */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 space-y-6">
-        <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-          <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center">
-            <Server className="w-5 h-5 text-indigo-600" />
-          </div>
-          <div>
-            <h2 className="text-base font-semibold text-slate-900">Provider</h2>
-            <p className="text-xs text-slate-500">API credentials for your email provider</p>
-          </div>
-        </div>
-
-        {/* Endpoint */}
-        <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">Endpoint</label>
-          <input
-            type="text"
-            value={settings.ovh_endpoint}
-            onChange={(e) => handleChange("ovh_endpoint", e.target.value)}
-            placeholder="eu.api.ovh.com"
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition-all"
-          />
-        </div>
-
-        {/* Application Key */}
-        <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">Application Key</label>
-          <div className="relative">
-            <Key className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
-              type="text"
-              value={settings.ovh_application_key}
-              onChange={(e) => handleChange("ovh_application_key", e.target.value)}
-              placeholder="d57d46..."
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition-all"
-            />
-          </div>
-        </div>
-
-        {/* Application Secret */}
-        <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">Application Secret</label>
-          <div className="relative">
-            <input
-              type={showSecret ? "text" : "password"}
-              value={settings.ovh_application_secret}
-              onChange={(e) => handleChange("ovh_application_secret", e.target.value)}
-              placeholder="••••••••"
-              className="w-full px-4 pr-12 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition-all"
-            />
-            <button
-              type="button"
-              onClick={() => setShowSecret((v) => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 rounded transition-colors"
-              tabIndex={-1}
-            >
-              {showSecret ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
-          </div>
-        </div>
-
-        {/* Consumer Key */}
-        <div>
-          <label className="block text-sm font-semibold text-slate-700 mb-2">Consumer Key</label>
-          <div className="relative">
-            <input
-              type={showConsumer ? "text" : "password"}
-              value={settings.ovh_consumer_key}
-              onChange={(e) => handleChange("ovh_consumer_key", e.target.value)}
-              placeholder="••••••••"
-              className="w-full px-4 pr-12 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition-all"
-            />
-            <button
-              type="button"
-              onClick={() => setShowConsumer((v) => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 rounded transition-colors"
-              tabIndex={-1}
-            >
-              {showConsumer ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
-          </div>
-        </div>
-
-        {/* Redirect Targets */}
-        <div className="pt-4 border-t border-slate-100">
-          <div className="flex items-center gap-2 mb-3">
-            <Mail className="w-4 h-4 text-slate-500" />
-            <h3 className="text-sm font-semibold text-slate-700">Redirect Targets</h3>
-          </div>
-          <p className="text-xs text-slate-500 mb-3">
-            One email address per line. These appear as suggestions when creating or editing an alias.
-          </p>
-          <textarea
-            value={redirectTargets}
-            onChange={(e) => setRedirectTargets(e.target.value)}
-            placeholder={"user@example.com\nother@domain.com"}
-            rows={6}
-            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition-all resize-y font-mono"
-          />
-        </div>
-
-        {/* Domains & Providers */}
-        <div className="pt-4 border-t border-slate-100">
-          <div className="flex items-center gap-2 mb-3">
-            <Globe className="w-4 h-4 text-slate-500" />
-            <h3 className="text-sm font-semibold text-slate-700">Domains &amp; Providers</h3>
-          </div>
-          <p className="text-xs text-slate-500 mb-3">
-            Map each domain to its email provider. Used for alias generation and sync.
-          </p>
-          <div className="space-y-2">
-            {domainPairs.map((pair, i) => (
-              <div key={i} className="flex items-center gap-2">
-                <input
-                  type="text"
-                  value={pair.domain}
-                  onChange={(e) => {
-                    const next = [...domainPairs];
-                    next[i] = { ...next[i], domain: e.target.value };
-                    setDomainPairs(next);
-                  }}
-                  placeholder="domain.com"
-                  className="flex-1 px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition-all"
-                />
-                <input
-                  type="text"
-                  value={pair.provider}
-                  onChange={(e) => {
-                    const next = [...domainPairs];
-                    next[i] = { ...next[i], provider: e.target.value };
-                    setDomainPairs(next);
-                  }}
-                  placeholder="provider"
-                  className="w-24 px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition-all"
-                />
-                <button
-                  type="button"
-                  onClick={() => setDomainPairs(domainPairs.filter((_, j) => j !== i))}
-                  className="p-2 text-slate-400 hover:text-red-500 rounded-lg transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Left Column */}
+        <div className="space-y-6">
+          {/* Domains */}
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+            <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+              <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center">
+                <Globe className="w-5 h-5 text-indigo-600" />
               </div>
-            ))}
+              <div>
+                <h2 className="text-base font-semibold text-slate-900">Domains</h2>
+                <p className="text-xs text-slate-500">Map each domain to its email provider</p>
+              </div>
+            </div>
+            <div className="mt-4 space-y-2">
+              {domainPairs.map((pair, i) => (
+                <div key={i} className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={pair.domain}
+                    onChange={(e) => {
+                      const next = [...domainPairs];
+                      next[i] = { ...next[i], domain: e.target.value };
+                      setDomainPairs(next);
+                    }}
+                    placeholder="domain.com"
+                    className="flex-1 px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition-all"
+                  />
+                  <select
+                    value={pair.provider}
+                    onChange={(e) => {
+                      const next = [...domainPairs];
+                      next[i] = { ...next[i], provider: e.target.value };
+                      setDomainPairs(next);
+                    }}
+                    className="w-32 px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none"
+                  >
+                    <option value="">—</option>
+                    {providerList.map((p) => (
+                      <option key={p} value={p}>{p}</option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => setDomainPairs(domainPairs.filter((_, j) => j !== i))}
+                    className="p-2 text-slate-400 hover:text-red-500 rounded-lg transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => setDomainPairs([...domainPairs, { domain: "", provider: "" }])}
+              className="mt-3 px-3 py-1.5 text-xs font-medium text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors flex items-center gap-1"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Add Domain
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => setDomainPairs([...domainPairs, { domain: "", provider: "" }])}
-            className="mt-3 px-3 py-1.5 text-xs font-medium text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors flex items-center gap-1"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            Add Domain
-          </button>
-        </div>
 
-        {/* Save Button */}
-        <div className="pt-2">
+          {/* Providers */}
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+            <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+              <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center">
+                <Server className="w-5 h-5 text-indigo-600" />
+              </div>
+              <div>
+                <h2 className="text-base font-semibold text-slate-900">Providers</h2>
+                <p className="text-xs text-slate-500">Configure API credentials per provider</p>
+              </div>
+            </div>
+
+            <div className="mt-4">
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Provider</label>
+              <select
+                value={selectedProvider}
+                onChange={(e) => setSelectedProvider(e.target.value)}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none"
+              >
+                <option value="">Select a provider</option>
+                {providerList.map((p) => (
+                  <option key={p} value={p}>{p}</option>
+                ))}
+              </select>
+            </div>
+
+            {SelectedForm && <SelectedForm settings={settings} onChange={handleChange} />}
+
+            {selectedProvider && !SelectedForm && (
+              <div className="mt-4">
+                <p className="text-sm text-slate-400 italic">{selectedProvider} credentials — coming soon</p>
+              </div>
+            )}
+          </div>
+
           <button
             onClick={handleSave}
             disabled={saving}
-            className="px-6 py-2.5 bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/25 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+            className="w-full px-6 py-3 bg-indigo-600 text-white rounded-xl text-sm font-semibold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-500/25 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {saving ? (
               <>
@@ -331,6 +251,33 @@ export function SettingsPage() {
               </>
             )}
           </button>
+        </div>
+
+        {/* Right Column: Redirect Targets */}
+        <div>
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+            <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+              <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center">
+                <Mail className="w-5 h-5 text-indigo-600" />
+              </div>
+              <div>
+                <h2 className="text-base font-semibold text-slate-900">Redirect Targets</h2>
+                <p className="text-xs text-slate-500">Suggested destinations when creating aliases</p>
+              </div>
+            </div>
+            <div className="mt-4">
+              <p className="text-xs text-slate-500 mb-3">
+                One email address per line. These appear as suggestions in the redirect field.
+              </p>
+              <textarea
+                value={redirectTargets}
+                onChange={(e) => setRedirectTargets(e.target.value)}
+                placeholder={"user@example.com\nother@domain.com"}
+                rows={10}
+                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition-all resize-y font-mono"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>

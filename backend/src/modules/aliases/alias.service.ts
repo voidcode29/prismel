@@ -1,12 +1,9 @@
 import { aliasRepository } from "./alias.repository";
-import { OvhClient, OvhApiError } from "../../providers/ovh/ovh.client";
-import { mapRedirectionToAlias, type OvhRedirection } from "../../providers/ovh/ovh.mapper";
 import type { Alias, CreateAliasInput, UpdateAliasInput, GeneratedAlias, SyncResult } from "@prismel/shared";
 import { generateAlias, isDomainValid } from "./alias.generator";
-import { ALIAS_DOMAINS, DOMAIN_PROVIDERS } from "@prismel/shared";
+import { settingsService } from "../settings/settings.service";
+import { getProviderClient } from "../../providers/registry";
 import crypto from "crypto";
-
-const ovhClient = new OvhClient();
 
 export const aliasService = {
   getAll(): Alias[] {
@@ -20,31 +17,20 @@ export const aliasService = {
   async create(input: CreateAliasInput): Promise<Alias> {
     const [, domain] = input.email.split("@");
     const destination = input.destination || input.email;
+    const provider = settingsService.getDomainProviders()[domain];
 
-    let ovhRedirectionId: string;
+    if (!provider) {
+      throw new Error(`No provider configured for domain: ${domain}`);
+    }
 
-    // Create redirection at provider
+    const client = getProviderClient(provider);
+    if (!client) {
+      throw new Error(`Provider "${provider}" is not supported`);
+    }
+
+    let providerId: string;
     try {
-      await ovhClient.request(
-        "POST",
-        `/email/domain/${domain}/redirection`,
-        {
-          from: input.email,
-          to: destination,
-          localCopy: false,
-        },
-      );
-
-      // OVH POST returns a task object, not the redirection itself.
-      // Fetch the redirection list (filtered by from) to get the real ID.
-      const redirIds = await ovhClient.request<number[]>(
-        "GET",
-        `/email/domain/${domain}/redirection?from=${encodeURIComponent(input.email)}`,
-      );
-      if (!redirIds || redirIds.length === 0) {
-        throw new Error("Redirection created but not found in provider listing");
-      }
-      ovhRedirectionId = String(redirIds[0]);
+      providerId = await client.createRedirection(domain, input.email, destination);
     } catch (e) {
       throw new Error(`Provider create redirection failed: ${(e as Error).message}`);
     }
@@ -53,8 +39,8 @@ export const aliasService = {
     const alias: Alias = {
       id: crypto.randomUUID(),
       email: input.email,
-      provider: "ovh",
-      providerId: ovhRedirectionId,
+      provider,
+      providerId,
       domain: input.domain,
       destination,
       serviceName: input.serviceName,
@@ -71,16 +57,14 @@ export const aliasService = {
     const existing = aliasRepository.findById(id);
     if (!existing) return undefined;
 
-    // Push destination change to provider if destination changed
     if (input.destination && input.destination !== existing.destination && existing.providerId) {
-      try {
-        await ovhClient.request(
-          "PUT",
-          `/email/domain/${existing.domain}/redirection/${existing.providerId}`,
-          { to: input.destination },
-        );
-      } catch (e) {
-        throw new Error(`Provider update redirection failed: ${(e as Error).message}`);
+      const client = getProviderClient(existing.provider);
+      if (client) {
+        try {
+          await client.updateRedirection(existing.domain, existing.providerId, input.destination);
+        } catch (e) {
+          throw new Error(`Provider update redirection failed: ${(e as Error).message}`);
+        }
       }
     }
 
@@ -96,34 +80,17 @@ export const aliasService = {
     const alias = aliasRepository.findById(id);
     if (!alias) return false;
 
-    if (alias.providerId) {
-      // 1) Remove from remote provider
-      await ovhClient.request(
-        "DELETE",
-        `/email/domain/${alias.domain}/redirection/${alias.providerId}`
-      );
+    const client = getProviderClient(alias.provider);
 
-      // 2) Verify it's been removed
+    if (alias.providerId && client) {
       try {
-        await ovhClient.request(
-          "GET",
-          `/email/domain/${alias.domain}/redirection/${alias.providerId}`
-        );
-        // Still exists — deletion didn't take effect
-        throw new Error(`Redirection ${alias.providerId} still exists after delete`);
+        await client.deleteRedirection(alias.domain, alias.providerId);
+        await client.verifyDeleted(alias.domain, alias.providerId);
       } catch (e) {
-        if (e instanceof OvhApiError && e.status === 404) {
-          // Expected: 404 confirms deletion
-        } else if ((e as Error).message.includes("still exists")) {
-          throw e;
-        } else {
-          // Unexpected error (network, auth, etc.) — don't assume deletion succeeded
-          throw e;
-        }
+        throw e;
       }
     }
 
-    // 3) Remove locally
     return aliasRepository.delete(id);
   },
 
@@ -138,15 +105,18 @@ export const aliasService = {
     const log = (line: string) => { logs.push(line); if (onLog) onLog(line); };
     const startTime = Date.now();
 
+    const domains = settingsService.getDomains();
+    const domainProviders = settingsService.getDomainProviders();
+
     log("═══════════════════════════════════════");
     log(`Sync started at ${new Date().toISOString()}`);
-    log(`Configured domains: ${ALIAS_DOMAINS.join(", ")}`);
+    log(`Configured domains: ${domains.join(", ") || "none"}`);
     log("═══════════════════════════════════════");
     log("");
 
-    for (const domain of ALIAS_DOMAINS) {
+    for (const domain of domains) {
       const domainStart = Date.now();
-      const provider = DOMAIN_PROVIDERS[domain];
+      const provider = domainProviders[domain];
 
       log(`┌─ Domain: ${domain}`);
       log(`│  Provider: ${provider || "none"}`);
@@ -158,21 +128,16 @@ export const aliasService = {
         continue;
       }
 
-      if (provider !== "ovh") {
+      const syncClient = getProviderClient(provider);
+      if (!syncClient) {
         log(`│  → Provider "${provider}" not yet implemented — skipped`);
         log(`└─ Skipped`);
         log("");
         continue;
       }
 
-      // Provider sync
-      log(`│  Endpoint: /email/domain/${domain}/redirection`);
-
       try {
-        const redirIds = await ovhClient.request<number[]>(
-          "GET",
-          `/email/domain/${domain}/redirection`
-        );
+        const redirIds = await syncClient.listRedirectionIds(domain);
         const listTime = ((Date.now() - domainStart) / 1000).toFixed(1);
         log(`│  Response: ${redirIds.length} redirection(s) found (took ${listTime}s)`);
 
@@ -192,16 +157,12 @@ export const aliasService = {
           const progress = `[${i + 1}/${redirIds.length}]`;
 
           try {
-            const redir = await ovhClient.request<OvhRedirection>(
-              "GET",
-              `/email/domain/${domain}/redirection/${redirId}`
-            );
-
+            const redir = await syncClient.getRedirection(domain, String(redirId));
             const providerId = String(redir.id);
             const existing = aliasRepository.findByProviderId(providerId);
 
             if (!existing) {
-              const alias = mapRedirectionToAlias(domain, redir);
+              const alias = syncClient.mapToAlias(domain, redir);
               aliasRepository.create(alias);
               result.new++;
               imported++;
@@ -216,9 +177,6 @@ export const aliasService = {
                 });
                 result.updated++;
                 log(`│  ${progress} ↻ UPD  #${redirId}  ${redir.from} → ${redir.to} (was: ${existing.destination})`);
-              } else {
-                // Skip logging identical entries to keep output lean; uncomment for verbose:
-                // log(`│  ${progress} = OK   #${redirId}  ${redir.from}`);
               }
             }
           } catch (e) {

@@ -9,15 +9,16 @@ import {
 } from "./validators/alias.validator";
 import { errorHandler } from "./middleware/errorHandler";
 import { settingsController } from "./modules/settings/settings.controller";
-import { settingsService } from "./modules/settings/settings.service";
+import { seedOvhFromEnv } from "./providers/ovh/config";
+import { getSupportedProviders } from "./providers/registry";
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-// Seed settings from .env on first startup
-settingsService.seedFromEnv();
+// Seed provider settings from .env on first startup
+seedOvhFromEnv();
 
 // Alias routes
 app.get("/api/aliases", aliasController.getAll);
@@ -31,6 +32,11 @@ app.post("/api/aliases/sync", aliasController.sync);
 // Settings routes
 app.get("/api/settings", settingsController.getAll);
 app.put("/api/settings", settingsController.update);
+
+// Provider routes
+app.get("/api/settings/providers", (_req, res) => {
+  res.json(getSupportedProviders());
+});
 
 // Error handler
 app.use(errorHandler);

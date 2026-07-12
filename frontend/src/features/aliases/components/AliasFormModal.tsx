@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { ALIAS_DOMAINS } from "@prismel/shared";
 import type { Alias, CreateAliasInput, UpdateAliasInput } from "@prismel/shared";
 import { X, RefreshCw, Trash2 } from "lucide-react";
 import { api } from "../../../lib/api";
@@ -25,7 +24,7 @@ export function AliasFormModal({
   onDelete,
 }: AliasFormModalProps) {
   const [prefix, setPrefix] = useState("");
-  const [domain, setDomain] = useState<string>(ALIAS_DOMAINS[0] || "");
+  const [domain, setDomain] = useState<string>("");
   const [destination, setDestination] = useState("");
   const [serviceName, setServiceName] = useState("");
   const [description, setDescription] = useState("");
@@ -33,6 +32,7 @@ export function AliasFormModal({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [redirectTargets, setRedirectTargets] = useState<string[]>([]);
+  const [domains, setDomains] = useState<string[]>([]);
 
   // Initialize form when opening in edit mode
   useEffect(() => {
@@ -44,7 +44,7 @@ export function AliasFormModal({
     }
   }, [mode, alias]);
 
-  // Fetch redirect targets & reset error on open
+  // Fetch settings on open
   useEffect(() => {
     if (open) {
       setError(null);
@@ -61,8 +61,20 @@ export function AliasFormModal({
           } catch {
             setRedirectTargets([]);
           }
+          try {
+            const domainList = JSON.parse(data.alias_domains || "[]");
+            setDomains(Array.isArray(domainList) ? domainList : []);
+            if (mode === "create" && !domain) {
+              setDomain(domainList[0] || "");
+            }
+          } catch {
+            setDomains([]);
+          }
         })
-        .catch(() => setRedirectTargets([]));
+        .catch(() => {
+          setRedirectTargets([]);
+          setDomains([]);
+        });
     }
   }, [open, mode]);
 
@@ -176,7 +188,7 @@ export function AliasFormModal({
                     onChange={(e) => setDomain(e.target.value)}
                     className="px-4 py-2.5 border border-l-0 border-slate-300 rounded-r-xl bg-slate-50 text-sm text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none min-w-[140px]"
                   >
-                    {ALIAS_DOMAINS.map((d) => (
+                    {domains.map((d) => (
                       <option key={d} value={d}>
                         @{d}
                       </option>

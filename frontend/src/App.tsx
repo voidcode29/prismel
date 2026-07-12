@@ -35,7 +35,6 @@ export function App() {
           </div>
           <nav className="hidden md:flex items-center gap-1 text-sm font-medium">
             <NavLink to="/">Aliases</NavLink>
-            <NavLink to="/domains">Domains</NavLink>
             <NavLink to="/sync">Sync</NavLink>
             <NavLink to="/settings">Settings</NavLink>
           </nav>

@@ -1,7 +1,7 @@
 export interface Alias {
   id: string;
   email: string;
-  provider: "ovh";
+  provider: string;
   providerId: string;
   domain: string;
   destination?: string;
