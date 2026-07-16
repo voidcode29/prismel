@@ -1,4 +1,4 @@
-import { getOvhConfig } from "./config";
+import { getOvhConfig } from "./config.js";
 import crypto from "crypto";
 
 export class OvhApiError extends Error {

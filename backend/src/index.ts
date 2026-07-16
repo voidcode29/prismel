@@ -1,16 +1,16 @@
 import express from "express";
 import cors from "cors";
-import { config } from "./lib/config";
-import { aliasController } from "./modules/aliases/alias.controller";
+import { config } from "./lib/config.js";
+import { aliasController } from "./modules/aliases/alias.controller.js";
 import {
   validateCreateAlias,
   validateUpdateAlias,
   validateGenerateAlias,
-} from "./validators/alias.validator";
-import { errorHandler } from "./middleware/errorHandler";
-import { settingsController } from "./modules/settings/settings.controller";
-import { seedOvhFromEnv } from "./providers/ovh/config";
-import { getSupportedProviders } from "./providers/registry";
+} from "./validators/alias.validator.js";
+import { errorHandler } from "./middleware/errorHandler.js";
+import { settingsController } from "./modules/settings/settings.controller.js";
+import { seedOvhFromEnv } from "./providers/ovh/config.js";
+import { getSupportedProviders } from "./providers/registry.js";
 
 const app = express();
 

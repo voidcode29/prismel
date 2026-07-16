@@ -1,4 +1,4 @@
-import { settingsRepository } from "./settings.repository";
+import { settingsRepository } from "./settings.repository.js";
 
 export const settingsService = {
   getAll() {

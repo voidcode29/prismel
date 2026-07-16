@@ -1,5 +1,5 @@
-import { db } from "../../db";
-import { aliases } from "../../db/schema";
+import { db } from "../../db/index.js";
+import { aliases } from "../../db/schema.js";
 import type { Alias } from "@prismel/shared";
 import { eq } from "drizzle-orm";
 

@@ -1,4 +1,4 @@
-import { settingsRepository } from "../../modules/settings/settings.repository";
+import { settingsRepository } from "../../modules/settings/settings.repository.js";
 
 export function getOvhConfig() {
   return {

@@ -1,5 +1,5 @@
 import type { GeneratedAlias } from "@prismel/shared";
-import { settingsService } from "../settings/settings.service";
+import { settingsService } from "../settings/settings.service.js";
 
 // ── English adjectives ──────────────────────────────────────────────────────
 const en_adjectives = [

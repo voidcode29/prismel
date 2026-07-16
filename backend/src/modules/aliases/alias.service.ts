@@ -1,8 +1,8 @@
-import { aliasRepository } from "./alias.repository";
+import { aliasRepository } from "./alias.repository.js";
 import type { Alias, CreateAliasInput, UpdateAliasInput, GeneratedAlias, SyncResult } from "@prismel/shared";
-import { generateAlias, isDomainValid } from "./alias.generator";
-import { settingsService } from "../settings/settings.service";
-import { getProviderClient } from "../../providers/registry";
+import { generateAlias, isDomainValid } from "./alias.generator.js";
+import { settingsService } from "../settings/settings.service.js";
+import { getProviderClient } from "../../providers/registry.js";
 import crypto from "crypto";
 
 export const aliasService = {

@@ -1,5 +1,5 @@
-import { db } from "../../db";
-import { settings } from "../../db/schema";
+import { db } from "../../db/index.js";
+import { settings } from "../../db/schema.js";
 import { eq } from "drizzle-orm";
 
 export const settingsRepository = {

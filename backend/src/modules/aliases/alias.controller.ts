@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { aliasService } from "./alias.service";
+import { aliasService } from "./alias.service.js";
 
 export const aliasController = {
   async getAll(_req: Request, res: Response) {

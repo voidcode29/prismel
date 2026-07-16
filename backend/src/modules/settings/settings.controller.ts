@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { settingsService } from "./settings.service";
+import { settingsService } from "./settings.service.js";
 
 export const settingsController = {
   getAll(_req: Request, res: Response) {
