@@ -1,6 +1,6 @@
 import { db } from "../../db/index.js";
 import { aliases } from "../../db/schema.js";
-import type { Alias } from "@prismel/shared";
+import type { Alias } from "../../types/alias.js";
 import { eq } from "drizzle-orm";
 
 export const aliasRepository = {

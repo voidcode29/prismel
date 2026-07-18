@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback } from "react";
-import type { SyncResult } from "@prismel/shared";
+import type { SyncResult } from "@/types/alias";
 
 interface SyncState {
   syncing: boolean;

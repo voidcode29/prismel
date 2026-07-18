@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { createAliasSchema, updateAliasSchema, generateAliasSchema } from "@prismel/shared";
+import { createAliasSchema, updateAliasSchema, generateAliasSchema } from "../schemas/alias.schema.js";
 
 export function validateCreateAlias(req: Request, res: Response, next: NextFunction) {
   const result = createAliasSchema.safeParse(req.body);

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Alias, CreateAliasInput, UpdateAliasInput } from "@prismel/shared";
+import type { Alias, CreateAliasInput, UpdateAliasInput } from "@/types/alias";
 import { X, RefreshCw, Trash2 } from "lucide-react";
 import { api } from "../../../lib/api";
 import { RedirectCombobox } from "./RedirectCombobox";

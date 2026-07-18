@@ -1,6 +1,6 @@
 import { OvhClient } from "./ovh/ovh.client.js";
 import { mapRedirectionToAlias, type OvhRedirection } from "./ovh/ovh.mapper.js";
-import type { Alias } from "@prismel/shared";
+import type { Alias } from "../types/alias.js";
 
 export interface ProviderClient {
   readonly name: string;

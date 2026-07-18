@@ -1,4 +1,4 @@
-import type { GeneratedAlias } from "@prismel/shared";
+import type { GeneratedAlias } from "../../types/alias.js";
 import { settingsService } from "../settings/settings.service.js";
 
 // ── English adjectives ──────────────────────────────────────────────────────

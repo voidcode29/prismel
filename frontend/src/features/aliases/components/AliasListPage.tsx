@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
-import type { Alias } from "@prismel/shared";
+import type { Alias } from "@/types/alias";
 import {
   Mail,
   Search,

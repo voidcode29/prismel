@@ -2,6 +2,8 @@ node_modules/
 dist/
 backend/scripts/
 *.tsbuildinfo
+*.tar.gz
+deploy-build/
 
 # Environment
 .env

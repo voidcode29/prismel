@@ -2,7 +2,6 @@
   "name": "prismel",
   "private": true,
   "workspaces": [
-    "shared",
     "backend",
     "frontend"
   ],
@@ -11,7 +10,6 @@
     "dev:backend": "npm run dev -w @prismel/backend",
     "dev:frontend": "npm run dev -w @prismel/frontend",
     "build": "npm run build --workspaces --if-present",
-    "build:shared": "npm run build -w @prismel/shared",
     "build:backend": "npm run build -w @prismel/backend",
     "build:frontend": "npm run build -w @prismel/frontend",
     "lint": "npm run lint --workspaces --if-present",

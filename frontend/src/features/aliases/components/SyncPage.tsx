@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import type { Alias } from "@prismel/shared";
+import type { Alias } from "@/types/alias";
 import {
   RefreshCw,
   CheckCircle2,

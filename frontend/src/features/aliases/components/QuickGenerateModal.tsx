@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { CreateAliasInput } from "@prismel/shared";
+import type { CreateAliasInput } from "@/types/alias";
 import { X, RefreshCw } from "lucide-react";
 import { api } from "../../../lib/api";
 

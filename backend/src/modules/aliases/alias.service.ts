@@ -1,5 +1,5 @@
 import { aliasRepository } from "./alias.repository.js";
-import type { Alias, CreateAliasInput, UpdateAliasInput, GeneratedAlias, SyncResult } from "@prismel/shared";
+import type { Alias, CreateAliasInput, UpdateAliasInput, GeneratedAlias, SyncResult } from "../../types/alias.js";
 import { generateAlias, isDomainValid } from "./alias.generator.js";
 import { settingsService } from "../settings/settings.service.js";
 import { getProviderClient } from "../../providers/registry.js";

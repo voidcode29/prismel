@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import type { Alias } from "@prismel/shared";
+import type { Alias } from "../../types/alias.js";
 
 export interface OvhRedirection {
   id: number;

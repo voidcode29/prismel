@@ -1,4 +1,4 @@
-import type { Alias, CreateAliasInput, UpdateAliasInput, GeneratedAlias, SyncResult } from "@prismel/shared";
+import type { Alias, CreateAliasInput, UpdateAliasInput, GeneratedAlias, SyncResult } from "@/types/alias";
 
 const API_BASE = "/api";
 

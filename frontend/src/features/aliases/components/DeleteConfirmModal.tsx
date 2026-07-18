@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Alias } from "@prismel/shared";
+import type { Alias } from "@/types/alias";
 import { X, Trash2 } from "lucide-react";
 import { api } from "../../../lib/api";
 

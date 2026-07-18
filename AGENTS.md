@@ -55,8 +55,6 @@ mail-alias-manager/
 │
 ├── backend/
 │
-├── shared/
-│
 ├── data/
 │
 ├── docs/
@@ -148,36 +146,6 @@ backend/
 
 ---
 
-# Shared
-
-## Responsabilité
-
-Le dossier `shared/` contient les éléments communs au frontend et backend.
-
-Exemples :
-
-```
-
-shared/
-
-├── schemas/
-│   └── alias.schema.ts
-│
-├── types/
-│   └── alias.ts
-│
-└── constants/
-
-```
-
-Utiliser ce dossier pour partager :
-
-- types TypeScript
-- schémas Zod
-- constantes métier
-
----
-
 # Domaine Alias
 
 L'entité principale est l'alias.
@@ -255,13 +223,7 @@ Ajouter un nouveau fournisseur ne doit pas modifier la logique métier principal
 
 ## Mapping domaine → fournisseur
 
-La correspondance entre un domaine et son fournisseur est déclarée dans `shared/src/constants/domains.ts` via `DOMAIN_PROVIDERS` :
-
-```ts
-export const DOMAIN_PROVIDERS: Record<string, string> = {
-  "tical.fr": "ovh",
-};
-```
+La correspondance entre un domaine et son fournisseur est stockée en base (table `settings`, clé `domain_providers`), configurable via la page Settings de l'UI. Format : JSON `Record<string, string>` mappant domaine → nom de fournisseur.
 
 Les domaines sans fournisseur configuré sont ignorés silencieusement par la synchronisation.
 
@@ -482,3 +444,55 @@ Recherche possible par :
 * Les noms de fournisseurs ne sont jamais codés en dur dans la logique d'orchestration.
 * La correspondance domaine → fournisseur est centralisée dans `DOMAIN_PROVIDERS`.
 * Les logs de synchronisation ne mentionnent pas de fournisseur spécifique (ex. éviter « pas géré par OVH »).
+
+---
+
+# Build & déploiement
+
+## Commandes
+
+| Commande | Description |
+|----------|-------------|
+| `npm run dev` | Lance `tsx watch` (backend) + `vite` (frontend) en parallèle |
+| `npm run build` | Build tous les workspaces (backend, frontend) |
+| `npm run db:generate` | Génère les fichiers de migration SQL (`-w @prismel/backend`) |
+| `npm run db:push` | Pousse le schéma vers SQLite (`-w @prismel/backend`) |
+| `bash scripts/deploy.sh` | Génère l'archive `.tar.gz` de déploiement hors-ligne |
+
+## Déploiement
+
+Le script `scripts/deploy.sh` produit une archive autonome contenant :
+
+- `backend/dist/` compilé
+- `public/` (build frontend statique)
+- `node_modules/` production (modules natifs linux/x64)
+- `backend/dist/db/migrations/` (SQL de migration)
+- `.env.prod` (template)
+
+L'archive pré-définit les permissions (dossiers 755, fichiers 644). Sur le serveur, seul `chown -R` est nécessaire pour adapter le propriétaire.
+
+Sur le serveur : `node backend/dist/db/migrate.js` initialise la base sans drizzle-kit (utilise `drizzle-orm/migrator`).
+
+## Gotchas ESM
+
+### Extensions `.js` sur les imports relatifs
+
+Le backend utilise `"type": "module"` (ESM). Node.js ESM exige les extensions `.js` explicites sur tous les imports relatifs.
+
+- Écrire `import { config } from "./lib/config.js"` (pas `"./lib/config"`)
+- TypeScript résolve `./lib/config.js` vers `./lib/config.ts` à la compilation
+- Les imports de répertoire doivent pointer vers l'index : `import { db } from "../../db/index.js"`
+
+Le `backend/tsconfig.json` garde `moduleResolution: bundler` car `better-sqlite3`, `express`, `cors` sont des modules CJS sans `exports` ESM et cassent sous `NodeNext`. Sans enforcement à la compilation, toute omission de `.js` compile mais échoue au runtime.
+
+### Chemin de la base de données
+
+`backend/src/db/index.ts` et `backend/src/db/migrate.ts` résolvent le chemin de la base via `import.meta.dirname` (pas `process.cwd()`). Les scripts npm avec `-w @prismel/backend` changent le cwd à `backend/`, casserait un chemin relatif simple. Le résolveur remonte trois niveaux depuis `db/` (que ce soit `src/db/` en dev via tsx ou `dist/db/` en prod) pour atteindre `data/prismel.db` à la racine du projet.
+
+### `drizzle.config.ts`
+
+Les chemins dans `drizzle.config.ts` sont relatifs à `backend/` (cwd du workspace). Toujours utiliser `npm run db:* -w @prismel/backend`, jamais `npx drizzle-kit` directement depuis la racine.
+
+## Self-update
+
+Cet `AGENTS.md` doit être mis à jour à chaque changement significatif du projet : stack, conventions de code, structure, commandes de build/deploy, gotchas. Si un nouveau piège ESM ou de résolution est découvert, l'ajouter ici.

@@ -26,7 +26,7 @@ Provider (OVH API)
   Frontend (React + Vite)
 ```
 
-Providers are isolated behind a registry pattern. Domain-to-provider mapping is declared in shared constants — no hardcoded provider references in orchestration logic.
+Providers are isolated behind a registry pattern. Domain-to-provider mapping is stored in the database (table `settings`, configurable via the Settings page) — no hardcoded provider references in orchestration logic.
 
 ## Stack
 
@@ -71,31 +71,47 @@ Backend runs on `http://localhost:3001`. Frontend runs on `http://localhost:5173
 1. Create a directory under `backend/src/providers/<name>/`
 2. Implement the `ProviderClient` interface from `backend/src/providers/registry.ts`
 3. Register it in the `providers` object in `registry.ts`
-4. Add domain mappings in `shared/src/constants/domains.ts`
+4. Configure the domain-to-provider mapping in the Settings page (stored in the `settings` table)
 
 ## Production deployment
 
-### Build
+### Build the archive
 
 ```bash
-npm run build
+bash scripts/deploy.sh
 ```
 
-This compiles the backend TypeScript to `backend/dist/` and builds the frontend static assets to `frontend/dist/`.
+This produces a self-contained `prismel-<version>.tar.gz` (~7 MB) with:
+- Compiled `backend/dist/`
+- Frontend static assets in `public/`
+- Production `node_modules/` (native modules pre-compiled for linux/x64)
+- SQL migration files
+- `.env.prod` template
 
-### Run the backend
+Permissions are pre-set in the archive (directories 755, files 644). No internet access needed on the server.
+
+### Deploy
 
 ```bash
-cp backend/.env.example backend/.env
-# Edit backend/.env with production values
-node backend/dist/index.js
+sudo mkdir -p /opt/prismel
+sudo tar xzf prismel-<version>.tar.gz -C /opt/prismel
+sudo chown -R prismel:prismel /opt/prismel
+
+sudo -u prismel cp /opt/prismel/.env.prod /opt/prismel/.env
+sudo -u prismel vi /opt/prismel/.env          # set OVH keys
+
+# Initialize database (first deploy only)
+sudo -u prismel node /opt/prismel/backend/dist/db/migrate.js
+
+# Start
+sudo -u prismel node /opt/prismel/backend/dist/index.js
 ```
 
-Set `NODE_ENV=production` and configure `PORT` via environment or `.env`.
+The systemd service should use `WorkingDirectory=/opt/prismel/` so the workspace `node_modules` hoisting (backend deps installed at the root) resolves correctly.
 
 ### Serve the frontend
 
-The built frontend (`frontend/dist/`) is a static SPA. Serve it with any web server:
+The frontend static assets are in `public/`. Serve them with any web server. The API proxy is required so the SPA can reach backend endpoints under `/api/`.
 
 **nginx example:**
 
@@ -104,7 +120,7 @@ server {
     listen 80;
     server_name prismel.example.com;
 
-    root /path/to/prismel/frontend/dist;
+    root /opt/prismel/public;
     try_files $uri $uri/ /index.html;
 
     location /api/ {
@@ -118,11 +134,9 @@ server {
 }
 ```
 
-The API proxy is required so the frontend can reach backend endpoints under `/api/`.
-
 ### Database
 
-The SQLite database is created at `backend/data/prismel.db` on first run. Ensure the `data/` directory exists and is writable by the backend process. Back up this file regularly — it contains all local metadata not stored in the provider.
+The SQLite database lives at `data/prismel.db` (relative to the working directory, i.e. `/opt/prismel/data/prismel.db`). Ensure the `data/` directory exists and is writable by the service user. Back it up regularly — it contains all local metadata not stored in the provider.
 
 ## Project structure
 
@@ -135,6 +149,8 @@ prismel/
 │       ├── providers/
 │       │   └── ovh/         # OVH API client and mapper
 │       ├── db/              # Schema and migrations
+│       ├── types/           # Shared interfaces (Alias, SyncResult, ...)
+│       ├── schemas/         # Zod schemas (createAliasSchema, ...)
 │       ├── validators/
 │       ├── middleware/
 │       └── lib/
@@ -142,10 +158,6 @@ prismel/
 │   └── src/
 │       ├── features/aliases/ # Alias list, sync, quick-create components
 │       ├── features/settings/
+│       ├── types/           # Mirror of backend types (Alias, SyncResult, ...)
 │       └── components/       # Logo, ThemeToggle
-└── shared/
-    └── src/
-        ├── types/
-        ├── schemas/
-        └── constants/
 ```
