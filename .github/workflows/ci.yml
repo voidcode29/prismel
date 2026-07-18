@@ -1,0 +1,99 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: node:24-bookworm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2
+      - run: npm ci
+      - run: npm run typecheck --workspaces --if-present
+      - run: npm run lint --workspaces --if-present
+      - run: npm run build --workspaces --if-present
+
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    container: node:24-bookworm
+    env:
+      RUN_NUMBER: ${{ github.run_number }}
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+      VPS_PORT: ${{ secrets.VPS_PORT }}
+      VPS_USER: ${{ secrets.VPS_USER }}
+      VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+      VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2
+      - run: npm ci
+      - run: npm run build --workspaces --if-present
+      - run: npm run db:generate -w @prismel/backend
+        continue-on-error: true
+
+      - name: Assemble archive
+        run: |
+          ROOT="$GITHUB_WORKSPACE"
+          BUILD_DIR="$ROOT/deploy-build"
+          mkdir -p "$BUILD_DIR"/{backend/dist,public,data}
+
+          cp "$ROOT/package.json" "$ROOT/package-lock.json" "$BUILD_DIR/"
+          cp -r "$ROOT/backend/dist"/* "$BUILD_DIR/backend/dist/"
+          cp "$ROOT/backend/package.json" "$ROOT/backend/drizzle.config.ts" "$BUILD_DIR/backend/"
+          if [ -d "$ROOT/backend/src/db/migrations" ]; then
+            cp -r "$ROOT/backend/src/db/migrations" "$BUILD_DIR/backend/dist/db/"
+          fi
+          cp -r "$ROOT/frontend/dist"/* "$BUILD_DIR/public/"
+
+          (cd "$BUILD_DIR" && npm ci --omit=dev)
+
+          find "$BUILD_DIR" -type d -exec chmod 755 {} \;
+          find "$BUILD_DIR" -type f -exec chmod 644 {} \;
+          find "$BUILD_DIR/node_modules/.bin" -type f -exec chmod 755 {} \; 2>/dev/null || true
+
+          (cd "$BUILD_DIR" && tar czf "$ROOT/prismel-$RUN_NUMBER.tar.gz" .)
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "$VPS_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$VPS_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Deploy to VPS
+        run: |
+          scp -i ~/.ssh/deploy_key -P "${VPS_PORT:-22}" \
+            prismel-$RUN_NUMBER.tar.gz \
+            "$VPS_USER@$VPS_HOST:/tmp/"
+
+          ssh -i ~/.ssh/deploy_key -p "${VPS_PORT:-22}" \
+            "$VPS_USER@$VPS_HOST" \
+            "bash -s -- $RUN_NUMBER" << 'REMOTE'
+          set -euo pipefail
+          run_number="$1"
+          cd /opt/prismel
+          sudo systemctl stop prismel
+          tar czf "/tmp/prismel-backup-$(date +%s).tar.gz" --exclude="data" .
+          tar xzf "/tmp/prismel-$run_number.tar.gz" -C /opt/prismel/ --exclude="data"
+          chown -R githubdeploy:prismel-data /opt/prismel/.
+          chown prismel:prismel-data /opt/prismel/data
+          if [ -f backend/dist/db/migrate.js ]; then
+            node backend/dist/db/migrate.js
+          fi
+          sudo systemctl start prismel
+          sleep 3
+          curl -fsS http://localhost:3001/api/settings > /dev/null
+          rm "/tmp/prismel-$run_number.tar.gz"
+          REMOTE
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prismel-${{ github.run_number }}
+          path: prismel-${{ github.run_number }}.tar.gz

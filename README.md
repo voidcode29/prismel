@@ -42,10 +42,6 @@ Providers are isolated behind a registry pattern. Domain-to-provider mapping is 
 ```bash
 npm install
 
-# Set up OVH credentials
-cp backend/.env.example backend/.env
-# Edit backend/.env with your OVH API keys
-
 # Initialize the database
 npm run db:push
 
@@ -75,39 +71,101 @@ Backend runs on `http://localhost:3001`. Frontend runs on `http://localhost:5173
 
 ## Production deployment
 
-### Build the archive
+Deployment is fully automated via GitHub Actions. Every push to `main` triggers CI: tests run, and on success the archive is built (in a `node:24-bookworm` container matching the VPS glibc), scp'd to the server, extracted, migrations applied, and the systemd service restarted. A health check verifies the service is up; the run fails if the backend crashes.
 
-```bash
-bash scripts/deploy.sh
-```
+### Build pipeline
 
-This produces a self-contained `prismel-<version>.tar.gz` (~7 MB) with:
+The CI job produces a self-contained `prismel-<run-number>.tar.gz` (~7 MB) containing:
 - Compiled `backend/dist/`
 - Frontend static assets in `public/`
-- Production `node_modules/` (native modules pre-compiled for linux/x64)
+- Production `node_modules/` (native modules pre-compiled against the container's glibc 2.36 to match Debian 12)
 - SQL migration files
-- `.env.prod` template
 
-Permissions are pre-set in the archive (directories 755, files 644). No internet access needed on the server.
+The build number (`github.run_number`) is a monotonic integer; each push produces a unique, ordered archive. The artifact is also uploaded to GitHub Actions for 90 days as a fallback for rollback.
 
-### Deploy
+### VPS setup (one-time)
+
+Two-system-user model: `githubdeploy` for CI deployment, `prismel` for the runtime service. The app runs with least privilege and cannot modify its own code.
 
 ```bash
-sudo mkdir -p /opt/prismel
-sudo tar xzf prismel-<version>.tar.gz -C /opt/prismel
-sudo chown -R prismel:prismel /opt/prismel
+# Shared group for the SQLite database (writeable by both the runtime and the migration step)
+sudo groupadd prismel-data
 
-sudo -u prismel cp /opt/prismel/.env.prod /opt/prismel/.env
-sudo -u prismel vi /opt/prismel/.env          # set OVH keys
+# Runtime user: no login shell, no home (system user)
+sudo useradd -r -s /usr/sbin/nologin -G prismel-data prismel
 
-# Initialize database (first deploy only)
-sudo -u prismel node /opt/prismel/backend/dist/db/migrate.js
+# Deploy user: can SSH in, owns /opt/prismel, can restart the service via sudo
+sudo useradd -m -d /home/githubdeploy -s /bin/bash -G prismel-data githubdeploy
+sudo install -d -o githubdeploy -g githubdeploy -m 700 /home/githubdeploy/.ssh
 
-# Start
-sudo -u prismel node /opt/prismel/backend/dist/index.js
+# authorized_keys: paste the public half of the dedicated deploy ed25519 key
+sudo tee -a /home/githubdeploy/.ssh/authorized_keys <<'EOF'
+ssh-ed25519 AAAA... prismel-deploy
+EOF
+sudo chown githubdeploy:githubdeploy /home/githubdeploy/.ssh/authorized_keys
+sudo chmod 600 /home/githubdeploy/.ssh/authorized_keys
+
+# Restrictive sudoers: only systemctl stop/start/restart prismel, no password
+echo "githubdeploy ALL=(ALL) NOPASSWD: /bin/systemctl stop prismel, /bin/systemctl start prismel, /bin/systemctl restart prismel" | sudo tee /etc/sudoers.d/prismel-deploy
+sudo chmod 440 /etc/sudoers.d/prismel-deploy
+
+# Target directory with least-privilege ownership
+sudo mkdir -p /opt/prismel/data
+sudo chown -R githubdeploy:githubdeploy /opt/prismel
+sudo chown prismel:prismel-data /opt/prismel/data
+sudo chmod 750 /opt/prismel
+sudo chmod 770 /opt/prismel/data
 ```
 
-The systemd service should use `WorkingDirectory=/opt/prismel/` so the workspace `node_modules` hoisting (backend deps installed at the root) resolves correctly.
+Capture the VPS SSH fingerprint from a trusted machine (e.g. your laptop):
+
+```bash
+ssh-keyscan -H -p <port> <vps_host> 2>/dev/null > vps_known_hosts.txt
+# Verify it contains one or two host key lines, no error
+cat vps_known_hosts.txt
+```
+
+Then in GitHub repo settings, add these Actions secrets:
+
+| Secret | Value |
+|---|---|
+| `VPS_HOST` | VPS hostname or IP |
+| `VPS_PORT` | SSH port (omit if 22) |
+| `VPS_USER` | `githubdeploy` |
+| `VPS_SSH_KEY` | Private ed25519 key (full PEM) |
+| `VPS_KNOWN_HOSTS` | Contents of `vps_known_hosts.txt` |
+
+### systemd service
+
+`/etc/systemd/system/prismel.service`:
+
+```ini
+[Unit]
+Description=Prismel Backend
+After=network.target
+
+[Service]
+Type=simple
+User=prismel
+Group=prismel-data
+WorkingDirectory=/opt/prismel
+Environment=PORT=3001
+ExecStart=/usr/bin/node backend/dist/index.js
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/opt/prismel/data
+
+[Install]
+WantedBy=multi-user.target
+```
+
+`WorkingDirectory=/opt/prismel` is required so the SQLite path (`data/prismel.db` resolved from `import.meta.dirname`'s three-levels-up resolution) and workspace `node_modules` hoisting both work. The hardcoded directives (`NoNewPrivileges`, `ProtectSystem`, `ProtectHome`, `PrivateTmp`, `ReadWritePaths`) restrict the service to read-only filesystem except for `data/`, block SUID escalation, and isolate `/tmp` and `/home`.
+
+Configuration is entirely in the SQLite database (table `settings`) — OVH credentials, domain mappings, redirect targets. No `.env` file; the only env var is `PORT`, set inline in the systemd unit. OVH credentials are entered via the Settings page after the first start.
 
 ### Serve the frontend
 
@@ -133,6 +191,21 @@ server {
     }
 }
 ```
+
+### Rollback
+
+Each deploy produces `/tmp/prismel-backup-<timestamp>.tar.gz` on the VPS before extracting the new archive. To roll back:
+
+```bash
+# List available backups
+ls -t /tmp/prismel-backup-*.tar.gz
+# Restore one
+sudo systemctl stop prismel
+tar xzf /tmp/prismel-backup-<timestamp>.tar.gz -C /opt/prismel/
+sudo systemctl start prismel
+```
+
+Alternatively, download the build N artifact from GitHub Actions, scp it to the VPS, and extract it manually.
 
 ### Database
 

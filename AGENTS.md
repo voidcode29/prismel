@@ -449,7 +449,7 @@ Recherche possible par :
 
 # Build & déploiement
 
-## Commandes
+## Commandes locales
 
 | Commande | Description |
 |----------|-------------|
@@ -457,21 +457,84 @@ Recherche possible par :
 | `npm run build` | Build tous les workspaces (backend, frontend) |
 | `npm run db:generate` | Génère les fichiers de migration SQL (`-w @prismel/backend`) |
 | `npm run db:push` | Pousse le schéma vers SQLite (`-w @prismel/backend`) |
-| `bash scripts/deploy.sh` | Génère l'archive `.tar.gz` de déploiement hors-ligne |
 
-## Déploiement
+Il n'y a plus de script de build de déploiement local : le build de production passe exclusivement par la CI.
 
-Le script `scripts/deploy.sh` produit une archive autonome contenant :
+## Pipeline CI
 
-- `backend/dist/` compilé
-- `public/` (build frontend statique)
-- `node_modules/` production (modules natifs linux/x64)
-- `backend/dist/db/migrations/` (SQL de migration)
-- `.env.prod` (template)
+Workflow : `.github/workflows/ci.yml`. Deux jobs.
 
-L'archive pré-définit les permissions (dossiers 755, fichiers 644). Sur le serveur, seul `chown -R` est nécessaire pour adapter le propriétaire.
+### Job `test` (chaque push et PR)
 
-Sur le serveur : `node backend/dist/db/migrate.js` initialise la base sans drizzle-kit (utilise `drizzle-orm/migrator`).
+Tourne dans un container `node:24-bookworm` (Debian 12, glibc 2.36 — même distro que le VPS en prod). Étapes :
+
+1. `actions/checkout@v4`
+2. `jdx/mise-action@v2` : installe Node selon `mise.toml` (source unique de vérité pour la version Node)
+3. `npm ci`
+4. `npm run typecheck --workspaces --if-present`
+5. `npm run lint --workspaces --if-present`
+6. `npm run build --workspaces --if-present`
+
+### Job `deploy` (push main seulement, après que `test` passe)
+
+Même container, mêmes premières étapes, puis :
+
+1. `npm run db:generate -w @prismel/backend` (`continue-on-error: true` : safety net, les migrations doivent être committées par le développeur en local)
+2. Assemblage de l'archive `deploy-build/` : copie `backend/dist/`, `frontend/dist/` → `public/`, `package.json`/`package-lock.json` racine, `backend/package.json`, `backend/drizzle.config.ts`, `backend/src/db/migrations` → `backend/dist/db/migrations`
+3. `npm ci --omit=dev` dans le `deploy-build/` (installe uniquement les deps prod, avec les binaires natifs liés contre glibc 2.36 du container)
+4. `chmod` : dossiers 755, fichiers 644, `.bin/` 755
+5. `tar czf prismel-<run-number>.tar.gz .`
+6. SCP de l'archive vers `/tmp/` sur le VPS
+7. SSH : stop service, backup de l'actuel (`/tmp/prismel-backup-<timestamp>.tar.gz`), extract de la nouvelle (`--exclude="data"` pour préserver la DB existante), `chown -R githubdeploy:prismel-data /opt/prismel/.` puis `chown prismel:prismel-data /opt/prismel/data`, `node backend/dist/db/migrate.js` si présent, start service, health check via `curl http://localhost:3001/api/settings`
+8. `actions/upload-artifact@v4` : archive uploadée sur GitHub Actions (rétention 90 jours, fallback de rollback)
+
+Le `run_number` GitHub est un entier monotone — chaque archive est unique et ordonnée sans besoin de version sémantique.
+
+### Secrets GitHub Actions requis
+
+| Secret | Usage |
+|---|---|
+| `VPS_HOST` | IP ou domaine du VPS |
+| `VPS_PORT` | Port SSH (optionnel, défaut 22) |
+| `VPS_USER` | `githubdeploy` (utilisateur de déploiement dédié) |
+| `VPS_SSH_KEY` | Clé privée ed25519 dédiée (pas la clé perso) |
+| `VPS_KNOWN_HOSTS` | Résultat de `ssh-keyscan` depuis une machine de confiance |
+
+L'empreinte du serveur est vérifiée via `known_hosts` (pas de `StrictHostKeyChecking=no`). Détection automatique de MITM, de réinst VPS, ou de typo dans `VPS_HOST`.
+
+### Setup VPS one-shot
+
+Voir README "Production deployment" pour la procédure complète : deux users (`prismel` runtime + `githubdeploy` deploy), groupe partagé `prismel-data`, sudoers restrictif (seulement `systemctl stop/start/restart prismel`), dépose de la clé publique, `ssh-keyscan` pour `VPS_KNOWN_HOSTS`.
+
+### Modèle de permissions côté VPS
+
+Deux users système séparés pour principle-of-least-privilege :
+
+- `prismel` (`/usr/sbin/nologin`, system user, group `prismel-data`) : runtime du service systemd. Ne peut pas écrire son propre code, lit `.env` n'est plus applicable (config en DB).
+- `githubdeploy` (`/bin/bash`, group `prismel-data`) : reçoit le SSH CI, owns `/opt/prismel/` (code), peut sudo `systemctl stop/start/restart prismel` uniquement.
+
+Permissions filesystem cibles :
+
+```
+/opt/prismel/                          # githubdeploy:githubdeploy 750
+├── backend/dist/                       # githubdeploy:githubdeploy (755/644)
+├── node_modules/                       # githubdeploy:githubdeploy (755/644)
+├── public/                             # githubdeploy:githubdeploy (755/644)
+├── package.json, package-lock.json    # githubdeploy:githubdeploy 644
+└── data/                               # prismel:prismel-data 770
+    └── prismel.db                      # prismel:prismel-data 600 (runtime)
+```
+
+Le groupe `prismel-data` permet à `githubdeploy` d'écrire dans `data/` pendant la migration (qui tourne avant le start du service).`prismel` n'a aucun sudo.
+
+Directives systemd hardening (dans `prismel.service`) :
+- `NoNewPrivileges=true` : empêche SUID escalation
+- `ProtectSystem=full` : `/usr`, `/boot`, `/etc` read-only
+- `ProtectHome=true` : `/home` non accessible
+- `PrivateTmp=true` : `/tmp` privé pour le service
+- `ReadWritePaths=/opt/prismel/data` : whitelist explicite du seul répertoire writable
+
+`Environment=PORT=3001` est défini inline dans le systemd unit. Aucun fichier `.env`, aucun `dotenv`, aucun `EnvironmentFile=`. Les credentials OVH sont saisis via la page Settings de l'UI après premier démarrage, stockés en base SQLite (table `settings`).
 
 ## Gotchas ESM
 
@@ -492,6 +555,19 @@ Le `backend/tsconfig.json` garde `moduleResolution: bundler` car `better-sqlite3
 ### `drizzle.config.ts`
 
 Les chemins dans `drizzle.config.ts` sont relatifs à `backend/` (cwd du workspace). Toujours utiliser `npm run db:* -w @prismel/backend`, jamais `npx drizzle-kit` directement depuis la racine.
+
+### Modules natifs (better-sqlite3)
+
+`better_sqlite3.node` est compilé contre un ABI Node spécifique et lié contre une version de glibc. Le container CI (`node:24-bookworm` = Debian 12, glibc 2.36) et le VPS (Debian 12) sont identiques. `mise.toml` pinne Node 24.18.0 pour matcher le VPS. Toute divergence (autre distro, autre Node major) casserait le module natif au runtime.
+
+Si la prod change de distro ou version Node :
+1. Mettre à jour `mise.toml` (version Node)
+2. Mettre à jour `container:` dans `.github/workflows/ci.yml` (distro + Node)
+3. Regénérer `VPS_KNOWN_HOSTS` si la clé SSH serveur change
+
+### Convention migrations
+
+Les migrations sont générées par le développeur en local via `npm run db:generate`, puis committées dans `backend/src/db/migrations/`. La CI régénère en safety net (`continue-on-error: true`) mais ne commit pas. Si le schéma est modifié sans regeneration locale, le run CI ne cassera pas mais la prochaine migration sera vide.
 
 ## Self-update
 

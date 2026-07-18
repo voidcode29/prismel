@@ -1,0 +1,991 @@
+{
+  "updated": [
+    {
+      "email": "profuse-hawk@tical.fr",
+      "name": "Aeroport Marseille",
+      "description": "https://marseille.aeroport.fr",
+      "createdAt": "2024-04-30T08:24:53.450Z",
+      "updatedAt": "2024-04-30T08:25:16.533Z"
+    },
+    {
+      "email": "outrageous-beaver@tical.fr",
+      "name": "AGPM",
+      "description": "https://agpm.fr",
+      "createdAt": "2025-11-10T08:46:28.773Z",
+      "updatedAt": "2025-11-10T08:46:28.773Z"
+    },
+    {
+      "email": "insidious-vulture@tical.fr",
+      "name": "Airbnb",
+      "description": "https://airbnb.fr, https://airbnb.com",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-09-24T15:09:34.590Z"
+    },
+    {
+      "email": "alepia.com@20231125.tical.fr",
+      "name": "Alepia",
+      "description": "https://alepia.com/fr/commande",
+      "createdAt": "2024-10-27T09:22:43.843Z",
+      "updatedAt": "2024-10-27T09:22:43.843Z"
+    },
+    {
+      "email": "alpiniste.fr@20230922.tical.fr",
+      "name": "alpiniste.fr",
+      "description": "https://alpiniste.fr",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2023-09-22T07:25:50.606Z"
+    },
+    {
+      "email": "amazon.com@20230922.tical.fr",
+      "name": "Amazon",
+      "description": "https://amazon.fr, https://amazon.de, https://amazon.com, https://amazon.it, https://amazon.es, https://amazon.co.uk, https://amazon.be, https://amazon.com.be",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-09-22T09:18:14.950Z"
+    },
+    {
+      "email": "striking-wildcat@tical.fr",
+      "name": "Ameli.fr",
+      "description": "https://ameli.fr",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2025-01-20T13:44:46.673Z"
+    },
+    {
+      "email": "hospitable-seagull@tical.fr",
+      "name": "Anytype",
+      "description": "https://anytype.io",
+      "createdAt": "2025-07-14T09:58:54.743Z",
+      "updatedAt": "2025-07-14T10:13:24.766Z"
+    },
+    {
+      "email": "sepia-lemon@tical.fr",
+      "name": "app.club-services.fr",
+      "description": "https://app.club-services.fr/fr/inscription",
+      "createdAt": "2025-01-15T15:03:21.796Z",
+      "updatedAt": "2025-01-15T15:03:21.796Z"
+    },
+    {
+      "email": "apple.com@20230917.tical.fr",
+      "name": "Apple",
+      "description": "https://apple.com",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2023-09-17T01:35:10.136Z"
+    },
+    {
+      "email": "fluffy-apple@tical.fr",
+      "name": "Apple",
+      "description": "Apple.com",
+      "createdAt": "2025-08-25T21:39:14.230Z",
+      "updatedAt": "2025-08-25T21:40:24.983Z"
+    },
+    {
+      "email": "cagey-centaur@tical.fr",
+      "name": "Asus",
+      "description": "https://asus.com",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-09-17T13:03:43.220Z"
+    },
+    {
+      "email": "polite-zedoary@tical.fr",
+      "name": "Auchan",
+      "description": "https://auchan.fr",
+      "createdAt": "2024-05-14T12:40:43.810Z",
+      "updatedAt": "2024-05-14T12:40:43.810Z"
+    },
+    {
+      "email": "auto-doc.fr@20230922.tical.fr",
+      "name": "auto-doc.fr",
+      "description": "https://auto-doc.fr",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2023-09-22T07:31:41.523Z"
+    },
+    {
+      "email": "badoo.com@20230926.tical.fr",
+      "name": "Badoo",
+      "description": "https://badoo.com",
+      "createdAt": "2023-09-26T14:56:21.496Z",
+      "updatedAt": "2023-09-26T14:56:32.930Z"
+    },
+    {
+      "email": "actual-trillium@tical.fr",
+      "name": "Battle.net",
+      "description": "https://eu.battle.net, https://blizzard.com",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-07-01T13:35:18.673Z"
+    },
+    {
+      "email": "battle.net_fernand@tical.fr",
+      "name": "Battle.net bis",
+      "description": "https://battle.net",
+      "createdAt": "2023-11-16T09:43:49.280Z",
+      "updatedAt": "2024-07-01T13:35:35.413Z"
+    },
+    {
+      "email": "beautycoiffure.com@20231207.tical.fr",
+      "name": "Beauty Coiffure",
+      "description": "https://beautycoiffure.com",
+      "createdAt": "2023-12-07T07:29:39.796Z",
+      "updatedAt": "2023-12-07T07:29:59.733Z"
+    },
+    {
+      "email": "billetreduc.com@20230922.tical.fr",
+      "name": "Billetreduc",
+      "description": "https://billetreduc.com",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2023-09-22T07:35:46.803Z"
+    },
+    {
+      "email": "tda25@tical.fr",
+      "name": "bloctel.gouv.fr",
+      "description": "https://www.bloctel.gouv.fr/inscription",
+      "createdAt": "2025-10-25T10:31:18.570Z",
+      "updatedAt": "2025-10-25T10:31:18.570Z"
+    },
+    {
+      "email": "caring-pudina@tical.fr",
+      "name": "Booking",
+      "description": "https://booking.com",
+      "createdAt": "2024-12-27T14:12:33.536Z",
+      "updatedAt": "2024-12-27T14:12:33.536Z"
+    },
+    {
+      "email": "boulanger.com@20231121.tical.fr",
+      "name": "boulanger.com",
+      "description": "http://boulanger.com",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-09-25T11:37:34.480Z"
+    },
+    {
+      "email": "c6fd97bf-6315-4ad0-bf58-85c892aeb16e@tical.fr",
+      "name": "Broadcom / VMware",
+      "description": "https://vmware.com, https://broadcom.com",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-07-11T09:36:47.100Z"
+    },
+    {
+      "email": "horecashop.net@20230922.tical.fr",
+      "name": "Bruyerre (ex horecashop.net)",
+      "description": "https://horecashop.net, https://webshop.bruyerre.be/fr/",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-08-22T06:46:20.546Z"
+    },
+    {
+      "email": "comfortable-felonwort@tical.fr",
+      "name": "BUT",
+      "description": "https://but.fr",
+      "createdAt": "2025-11-05T17:03:25.860Z",
+      "updatedAt": "2025-11-05T17:03:25.860Z"
+    },
+    {
+      "email": "summer-cucumber@tical.fr",
+      "name": "c411.org",
+      "description": "https://c411.org",
+      "createdAt": "2026-03-04T21:23:11.613Z",
+      "updatedAt": "2026-03-04T21:27:08.043Z"
+    },
+    {
+      "email": "considerate-fern@tical.fr",
+      "name": "Carrefour",
+      "description": "https://carrefour.fr",
+      "createdAt": "2024-09-08T07:07:39.353Z",
+      "updatedAt": "2024-09-08T07:08:10.703Z"
+    },
+    {
+      "email": "blaring-carrot@tical.fr",
+      "name": "Carrefour (old)",
+      "description": "https://carrefour.fr",
+      "createdAt": "2023-11-28T21:48:54.386Z",
+      "updatedAt": "2025-07-28T13:46:19.903Z"
+    },
+    {
+      "email": "cdiscount.com@20230922.tical.fr",
+      "name": "Cdiscount",
+      "description": "https://cdiscount.com",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2023-09-22T07:40:50.636Z"
+    },
+    {
+      "email": "cdkeys.com@20240109.tical.fr",
+      "name": "Cdkeys.com",
+      "description": "https://cdkeys.com",
+      "createdAt": "2024-01-09T10:39:16.733Z",
+      "updatedAt": "2024-01-09T10:47:38.533Z"
+    },
+    {
+      "email": "raucous-dogbane@tical.fr",
+      "name": "charlestyrwhitt.com",
+      "description": "https://www.charlestyrwhitt.com/fr/register",
+      "createdAt": "2024-08-23T19:04:57.536Z",
+      "updatedAt": "2024-08-23T19:04:57.536Z"
+    },
+    {
+      "email": "tda25@tical.fr",
+      "name": "chat-perdu.org",
+      "description": "https://chat-perdu.org",
+      "createdAt": "2026-07-01T21:22:07.113Z",
+      "updatedAt": "2026-07-01T21:22:07.113Z"
+    },
+    {
+      "email": "opal-jaguar@tical.fr",
+      "name": "Chateauvallon Liberté",
+      "description": "https://theatre-liberte.notre-billetterie.fr, https://chateauvallon-liberte.fr",
+      "createdAt": "2025-01-06T21:25:23.850Z",
+      "updatedAt": "2025-01-13T16:19:45.163Z"
+    },
+    {
+      "email": "gray-cod@tical.fr",
+      "name": "CIC / Eurexo Expertise assu",
+      "description": "https://eurexo-ced.fr/, https://wa-fr-extranetassures-p-front-01.azurewebsites.net/, https://extranetassure.b2clogin.com",
+      "createdAt": "2026-03-10T12:06:46.960Z",
+      "updatedAt": "2026-03-29T22:00:37.296Z"
+    },
+    {
+      "email": "medium-emu@tical.fr",
+      "name": "Conforama",
+      "description": "https://conforama.fr",
+      "createdAt": "2025-10-28T21:47:17.553Z",
+      "updatedAt": "2025-10-28T21:47:17.553Z"
+    },
+    {
+      "email": "coursera.org@20231009.tical.fr",
+      "name": "Coursera",
+      "description": "https://coursera.org",
+      "createdAt": "2023-10-09T14:54:53.173Z",
+      "updatedAt": "2023-10-09T14:57:40.440Z"
+    },
+    {
+      "email": "teeming-pokeroot@tical.fr",
+      "name": "Covoyageurs",
+      "description": "https://les-covoyageurs.com",
+      "createdAt": "2024-09-24T09:36:41.603Z",
+      "updatedAt": "2024-09-24T09:36:55.920Z"
+    },
+    {
+      "email": "boring-kookabura@tical.fr",
+      "name": "d2jsp",
+      "description": "http://d2jsp.org",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-05-14T12:38:00.393Z"
+    },
+    {
+      "email": "darty.com@20230922.tical.fr",
+      "name": "Darty",
+      "description": "https://secure.darty.com/espace_client/connexion",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2023-09-22T07:42:15.833Z"
+    },
+    {
+      "email": "decathlon.com@20230922.tical.fr",
+      "name": "Decathlon",
+      "description": "https://decathlon.fr, https://decathlon.net, https://decathlon.com",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2023-09-22T07:44:37.043Z"
+    },
+    {
+      "email": "vivid-wyvern@tical.fr",
+      "name": "DGA Klaxoon",
+      "description": "https://klaxoon.com",
+      "createdAt": "2024-09-11T09:57:49.083Z",
+      "updatedAt": "2024-09-11T10:11:15.413Z"
+    },
+    {
+      "email": "utter-lemon@tical.fr",
+      "name": "DJI action cam",
+      "description": "https://dji.com/",
+      "createdAt": "2024-07-04T13:20:52.283Z",
+      "updatedAt": "2024-07-04T13:21:07.390Z"
+    },
+    {
+      "email": "doctolib.fr@20230920.tical.fr",
+      "name": "Doctolib",
+      "description": "https://www.doctolib.fr",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2023-11-08T22:29:38.550Z"
+    },
+    {
+      "email": "ea.com@20240207.tical.fr",
+      "name": "EA.com",
+      "description": "https://ea.com",
+      "createdAt": "2024-02-07T17:34:17.590Z",
+      "updatedAt": "2024-02-07T17:35:57.310Z"
+    },
+    {
+      "email": "edf.fr@20230614.tical.fr",
+      "name": "EDF",
+      "description": "https://edf.fr",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2026-02-05T14:07:58.870Z"
+    },
+    {
+      "email": "admired-bread@tical.fr",
+      "name": "ENSAP",
+      "description": "https://ensap.gouv.fr",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2025-01-24T14:07:36.303Z"
+    },
+    {
+      "email": "enviedeplus.com@20231201.tical.fr",
+      "name": "enviedeplus.com",
+      "description": "https://www.enviedeplus.com/inscription",
+      "createdAt": "2023-12-01T17:21:09.520Z",
+      "updatedAt": "2023-12-01T17:21:09.520Z"
+    },
+    {
+      "email": "amiable-bearberry@tical.fr",
+      "name": "Etam",
+      "description": "https://www.etam.com",
+      "createdAt": "2025-03-20T15:01:16.523Z",
+      "updatedAt": "2025-03-21T16:45:48.906Z"
+    },
+    {
+      "email": "tight-chough@tical.fr",
+      "name": "Etsy",
+      "description": "https://etsy.com",
+      "createdAt": "2025-04-28T22:26:26.666Z",
+      "updatedAt": "2025-04-28T22:26:44.223Z"
+    },
+    {
+      "email": "naive-holly@tical.fr",
+      "name": "Facebook Marketplace",
+      "description": "https://www.facebook.com, androidapp://com.pitchedapps.frost, androidapp://com.facebook.orca",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-09-17T12:45:44.003Z"
+    },
+    {
+      "email": "naive-olee@tical.fr",
+      "name": "Facebook Marketplace 2",
+      "description": "https://www.facebook.com, androidapp://com.facebook.orca",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-09-17T12:51:12.296Z"
+    },
+    {
+      "email": "b72c8e2e-a528-4230-8551-5e1903bb60bd@tical.fr",
+      "name": "Facebook principal",
+      "description": "https://facebook.com, androidapp://com.pitchedapps.frost, androidapp://com.facebook.orca",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-05-02T07:47:19.216Z"
+    },
+    {
+      "email": "metabolic-parsnip@tical.fr",
+      "name": "Familles de marins",
+      "description": "https://famillesdemarins.com",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-05-14T12:13:55.653Z"
+    },
+    {
+      "email": "hungry-fox@tical.fr",
+      "name": "FamilyWall",
+      "description": "https://familywall.com, androidapp://com.familywall",
+      "createdAt": "2026-06-12T22:39:24.976Z",
+      "updatedAt": "2026-06-12T22:45:02.980Z"
+    },
+    {
+      "email": "glacial-guanaco@tical.fr",
+      "name": "filen.io",
+      "description": "https://filen.io, androidapp://io.filen.app",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2026-03-04T17:00:16.136Z"
+    },
+    {
+      "email": "fnac.com@20231106.tical.fr",
+      "name": "Fnac",
+      "description": "https://fnac.com",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2023-11-06T19:45:44.276Z"
+    },
+    {
+      "email": "magenta-plague@tical.fr",
+      "name": "Forum HFR",
+      "description": "https://forum.hardware.fr, androidapp://com.ayuget.redface",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-07-15T12:10:53.686Z"
+    },
+    {
+      "email": "oafish-wanderer@tical.fr",
+      "name": "Gaz De Bordeaux",
+      "description": "https://gazdebordeaux.fr",
+      "createdAt": "2026-02-05T14:47:52.120Z",
+      "updatedAt": "2026-02-05T14:48:56.140Z"
+    },
+    {
+      "email": "tda24@tical.fr",
+      "name": "gensdeconfiance.com",
+      "description": "https://gensdeconfiance.com, androidapp://fr.gensdeconfiance.app",
+      "createdAt": "2024-12-05T18:56:43.493Z",
+      "updatedAt": "2025-01-17T21:11:46.180Z"
+    },
+    {
+      "email": "spherical-boar2@tical.fr",
+      "name": "gh / OpenCode Go",
+      "description": "https://github.com, https://opencode.ai",
+      "createdAt": "2026-05-06T19:54:28.330Z",
+      "updatedAt": "2026-06-20T03:47:15.430Z"
+    },
+    {
+      "email": "alto-avia@tical.fr",
+      "name": "gh ALAVIA",
+      "description": "https://github.com",
+      "createdAt": "2026-06-18T08:36:26.776Z",
+      "updatedAt": "2026-06-20T03:47:25.913Z"
+    },
+    {
+      "email": "github.com@20240116.tical.fr",
+      "name": "GitHub",
+      "description": "https://github.com",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2026-07-02T13:30:35.010Z"
+    },
+    {
+      "email": "3f8d114147b54f7d9c3ecbb@tical.fr",
+      "name": "GMF",
+      "description": "https://gmf.fr",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-09-24T14:57:27.943Z"
+    },
+    {
+      "email": "onyx-apricot@tical.fr",
+      "name": "GOG",
+      "description": "https://gog.com",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2025-02-18T10:21:06.180Z"
+    },
+    {
+      "email": "opal-pistachio@tical.fr",
+      "name": "Harmonie",
+      "description": "https://harmonie-et-moi.fr, https://harmonie-mutuelle.fr, https://harmonie-fp.fr",
+      "createdAt": "2025-01-10T09:41:13.540Z",
+      "updatedAt": "2025-01-17T08:20:44.650Z"
+    },
+    {
+      "email": "hollisterco.com@20230922.tical.fr",
+      "name": "hollisterco.com",
+      "description": "https://www.hollisterco.com",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2023-09-22T07:46:15.816Z"
+    },
+    {
+      "email": "0fe7c1d8-5c18-4ac8-8247-994a9deaf0ac@tical.fr",
+      "name": "Huggingface",
+      "description": "https://huggingface.co",
+      "createdAt": "2024-03-27T08:54:23.190Z",
+      "updatedAt": "2024-03-27T08:56:22.510Z"
+    },
+    {
+      "email": "lost-parrot@tical.fr",
+      "name": "Hytale",
+      "description": "https://hytale.com",
+      "createdAt": "2026-01-19T19:31:23.716Z",
+      "updatedAt": "2026-01-19T19:31:54.870Z"
+    },
+    {
+      "email": "elaborate-inkberry@tical.fr",
+      "name": "IGESA",
+      "description": "https://igesa.fr",
+      "createdAt": "2024-05-27T15:10:08.286Z",
+      "updatedAt": "2026-05-06T13:17:40.400Z"
+    },
+    {
+      "email": "igraal.com@20231120.tical.fr",
+      "name": "iGraal",
+      "description": "http://igraal.com",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2023-11-20T20:58:01.093Z"
+    },
+    {
+      "email": "striking-wildcat@tical.fr",
+      "name": "Impots.gouv.fr",
+      "description": "https://impots.gouv.fr, https://cnil.fr",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2025-10-09T18:16:39.366Z"
+    },
+    {
+      "email": "inmac-wstore.com@20230923.tical.fr",
+      "name": "inmac-wstore",
+      "description": "https://inmac-wstore.com",
+      "createdAt": "2023-09-23T10:30:48.916Z",
+      "updatedAt": "2023-09-23T10:31:16.950Z"
+    },
+    {
+      "email": "bothered-gopher@tical.fr",
+      "name": "instagram.com",
+      "description": "https://www.instagram.com/accounts/emailsignup/",
+      "createdAt": "2025-05-20T15:14:47.456Z",
+      "updatedAt": "2025-05-20T15:14:47.456Z"
+    },
+    {
+      "email": "disloyal-goose@tical.fr",
+      "name": "Intersport",
+      "description": "http://intersport.fr",
+      "createdAt": "2024-07-30T08:54:35.483Z",
+      "updatedAt": "2024-07-30T08:54:50.926Z"
+    },
+    {
+      "email": "celebrated-blade@tical.fr",
+      "name": "IONOS",
+      "description": "https://ionos.fr",
+      "createdAt": "2026-05-14T09:15:06.416Z",
+      "updatedAt": "2026-05-14T09:15:06.416Z"
+    },
+    {
+      "email": "macabre-grapefruit@tical.fr",
+      "name": "K2S.CC Downloads",
+      "description": "http://k2s.cc",
+      "createdAt": "2024-05-27T21:55:26.470Z",
+      "updatedAt": "2024-05-27T21:55:38.166Z"
+    },
+    {
+      "email": "rainbow-pigeon@tical.fr",
+      "name": "La Poste",
+      "description": "https://laposte.fr",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-10-25T15:56:45.466Z"
+    },
+    {
+      "email": "buoyant-behemoth@tical.fr",
+      "name": "La Redoute",
+      "description": "https://laredoute.fr",
+      "createdAt": "2024-11-25T20:57:34.716Z",
+      "updatedAt": "2024-11-25T20:57:50.516Z"
+    },
+    {
+      "email": "sophisticated-alder@tical.fr",
+      "name": "La table darc",
+      "description": "https://latabledarc.com",
+      "createdAt": "2026-01-03T19:04:55.643Z",
+      "updatedAt": "2026-01-03T19:07:26.333Z"
+    },
+    {
+      "email": "ldlc.com@20231115.tical.fr",
+      "name": "LDLC",
+      "description": "https://ldlc.com",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2023-11-15T09:43:20.150Z"
+    },
+    {
+      "email": "playful-root@tical.fr",
+      "name": "le-beguin.fr",
+      "description": "https://www.le-beguin.fr, https://www.proximeety.com",
+      "createdAt": "2024-09-20T18:53:17.126Z",
+      "updatedAt": "2024-11-20T09:35:40.826Z"
+    },
+    {
+      "email": "ghoulish-felonwood@tical.fr",
+      "name": "Lepape",
+      "description": "https://elite.lepape.com, https://lepape.com",
+      "createdAt": "2024-04-27T05:06:33.663Z",
+      "updatedAt": "2024-10-30T15:20:34.723Z"
+    },
+    {
+      "email": "leroymerlin.fr@20230922.tical.fr",
+      "name": "Leroy Merlin",
+      "description": "https://leroymerlin.fr",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2023-09-22T07:48:26.550Z"
+    },
+    {
+      "email": "linkedin.com@20230915.tical.fr",
+      "name": "Linkedin",
+      "description": "https://linkedin.com, androidapp://com.linkedin.android",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2023-09-15T14:16:39.096Z"
+    },
+    {
+      "email": "salty-ibex@tical.fr",
+      "name": "login.pathe.me",
+      "description": "https://login.pathe.me/u/signup?state=hKFo2SBEQkN3MzE1TC1hd0hTTlRDMmZ3LWNYT2xiT0xPVmdQY6Fur3VuaXZlcnNhbC1sb2dpbqN0aWTZIFdQeGk2ckpWUG81d1ljMGljX1dhV0xfck1Cdk5vTmU4o2NpZNkgcjMwUmJGMk1qeTQ5eFhPWFNEM0VMcXpVdUtUemFnMEw&ui_locales=fr",
+      "createdAt": "2025-05-23T17:41:43.546Z",
+      "updatedAt": "2025-05-23T17:41:43.546Z"
+    },
+    {
+      "email": "maisondumonde.com@20230908.tical.fr",
+      "name": "Maison du monde",
+      "description": "https://www.maisonsdumonde.com",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2023-11-21T11:10:21.733Z"
+    },
+    {
+      "email": "materiel.net@20231101.tical.fr",
+      "name": "Materiel.net",
+      "description": "https://materiel.net",
+      "createdAt": "2023-11-01T07:31:30.323Z",
+      "updatedAt": "2023-11-01T07:32:23.326Z"
+    },
+    {
+      "email": "bronzeyarrow@tical.fr",
+      "name": "Meetic",
+      "description": "https://meetic.fr",
+      "createdAt": "2024-09-20T18:43:51.240Z",
+      "updatedAt": "2024-09-20T18:44:18.940Z"
+    },
+    {
+      "email": "recycled-laurel@tical.fr",
+      "name": "Meetic fake",
+      "description": "https://www.meetic.fr/p/celibataires/femme/",
+      "createdAt": "2024-12-29T12:36:40.663Z",
+      "updatedAt": "2024-12-29T12:36:40.663Z"
+    },
+    {
+      "email": "tda25@tical.fr",
+      "name": "Meetup",
+      "description": "https://www.meetup.com",
+      "createdAt": "2025-01-25T10:33:31.386Z",
+      "updatedAt": "2025-01-25T10:34:12.993Z"
+    },
+    {
+      "email": "droopy-chimpanzee@tical.fr",
+      "name": "Mozilla / Firefox Account",
+      "description": "https://firefox.com, https://mozilla.org",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2025-11-27T21:48:54.730Z"
+    },
+    {
+      "email": "nifty-quercus@tical.fr",
+      "name": "nespresso.com",
+      "description": "https://nespresso.com",
+      "createdAt": "2025-12-16T18:11:28.396Z",
+      "updatedAt": "2025-12-16T18:11:56.863Z"
+    },
+    {
+      "email": "notion.so@20230911.tical.fr",
+      "name": "Notion",
+      "description": "https://notion.so, androidapp://notion.id",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2025-01-06T10:43:04.513Z"
+    },
+    {
+      "email": "popular-cattle@tical.fr",
+      "name": "OkCupid",
+      "description": "https://okcupid.com",
+      "createdAt": "2024-10-08T21:15:12.500Z",
+      "updatedAt": "2024-10-08T21:15:39.310Z"
+    },
+    {
+      "email": "inventive-dogwood@tical.fr",
+      "name": "OpenAI",
+      "description": "https://openai.com, https://chatgpt.com, androidapp://org.woheller69.gptassist",
+      "createdAt": "2024-09-25T13:34:08.733Z",
+      "updatedAt": "2024-10-02T05:45:54.150Z"
+    },
+    {
+      "email": "parsec.app@20231211.tical.fr",
+      "name": "Parsec",
+      "description": "https://parsecgaming.com, https://parsec.app",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2023-12-11T22:13:20.773Z"
+    },
+    {
+      "email": "bare-goat@tical.fr",
+      "name": "Pathofexile",
+      "description": "https://pathofexile.com, https://pathofexile2.com",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-07-31T14:41:36.283Z"
+    },
+    {
+      "email": "our-elephant@tical.fr",
+      "name": "PD2 web",
+      "description": "https://projectdiablo2.com",
+      "createdAt": "2024-05-14T20:47:23.893Z",
+      "updatedAt": "2024-05-20T19:16:09.983Z"
+    },
+    {
+      "email": "peaceful-bean@tical.fr",
+      "name": "picard.fr",
+      "description": "https://picard.fr",
+      "createdAt": "2024-09-11T20:03:40.640Z",
+      "updatedAt": "2024-10-14T08:45:45.833Z"
+    },
+    {
+      "email": "tda2023@tical.fr",
+      "name": "Planetebain",
+      "description": "https://planetebain.com",
+      "createdAt": "2023-11-21T18:48:55.523Z",
+      "updatedAt": "2023-11-21T18:49:11.676Z"
+    },
+    {
+      "email": "handmade-fumewort@tical.fr",
+      "name": "Pocketcasts",
+      "description": "androidapp://au.com.shiftyjelly.pocketcasts, https://pocketcasts.com",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-09-27T08:38:16.386Z"
+    },
+    {
+      "email": "cerebral-snowdrop@tical.fr",
+      "name": "privatesportshop.fr",
+      "description": "https://www.privatesportshop.fr/catalog/product/view/id/3573840",
+      "createdAt": "2024-12-21T19:05:08.243Z",
+      "updatedAt": "2024-12-21T19:05:08.243Z"
+    },
+    {
+      "email": "ralphlauren.fr@20231124.tical.fr",
+      "name": "Ralph Lauren",
+      "description": "https://ralphlauren.fr",
+      "createdAt": "2023-12-02T18:43:51.163Z",
+      "updatedAt": "2023-12-02T18:45:34.876Z"
+    },
+    {
+      "email": "rasage-classique.com@20230929.tical.fr",
+      "name": "Rasage classique",
+      "description": "https://rasage-classique.com",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2023-09-29T18:14:21.460Z"
+    },
+    {
+      "email": "weighty-almond@tical.fr",
+      "name": "Reddit",
+      "description": "https://reddit.com, androidapp://ml.docilealligator.infinityforreddit",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-07-05T10:08:22.383Z"
+    },
+    {
+      "email": "candid-charybdis@tical.fr",
+      "name": "Reddit fake",
+      "description": "https://reddit.com",
+      "createdAt": "2024-11-05T16:43:01.436Z",
+      "updatedAt": "2024-11-05T16:43:28.436Z"
+    },
+    {
+      "email": "d18eb7531fe14390b7b186745521576d@tical.fr",
+      "name": "Reglo",
+      "description": "https://www.reglomobile.fr, https://securelconnect.fr",
+      "createdAt": "2024-02-23T22:55:26.230Z",
+      "updatedAt": "2026-02-21T10:13:44.390Z"
+    },
+    {
+      "email": "fuzzy-opossum@tical.fr",
+      "name": "Rueducommerce",
+      "description": "https://rueducommerce.fr",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-05-14T12:44:08.843Z"
+    },
+    {
+      "email": "determined-salamander@tical.fr",
+      "name": "Ryanair",
+      "description": "https://www.ryanair.com",
+      "createdAt": "2024-09-29T14:15:33.066Z",
+      "updatedAt": "2025-02-26T10:31:11.363Z"
+    },
+    {
+      "email": "tda24@tical.fr",
+      "name": "SANEF Mum",
+      "description": "sanef.com",
+      "createdAt": "2024-12-29T08:34:16.196Z",
+      "updatedAt": "2024-12-29T08:37:13.533Z"
+    },
+    {
+      "email": "incorruptable-harpy@tical.fr",
+      "name": "Segway",
+      "description": "https://segway.com",
+      "createdAt": "2025-01-13T14:52:39.613Z",
+      "updatedAt": "2025-01-13T15:21:13.033Z"
+    },
+    {
+      "email": "sfr.fr@20230922.tical.fr",
+      "name": "SFR",
+      "description": "https://red-by-sfr.fr, https://sfr.fr",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2023-09-22T07:50:44.816Z"
+    },
+    {
+      "email": "rusty-azolla@tical.fr",
+      "name": "Shop HFR",
+      "description": "https://secure.hardware.fr",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-08-02T08:50:56.556Z"
+    },
+    {
+      "email": "patchy-grasshopper@tical.fr",
+      "name": "Showroomprive",
+      "description": "https://www.showroomprive.com",
+      "createdAt": "2025-02-17T20:12:24.186Z",
+      "updatedAt": "2025-02-17T20:12:53.313Z"
+    },
+    {
+      "email": "wobbly-quetzal@tical.fr",
+      "name": "Simplelogin",
+      "description": "https://simplelogin.io",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-09-05T19:08:23.303Z"
+    },
+    {
+      "email": "sncf.com@20231228.tical.fr",
+      "name": "SNCF",
+      "description": "https://sncf.com, https://oui.sncf, https://sncf-connect.com, https://monidentifiant.sncf, https://tgvinoui.sncf",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2026-03-14T08:46:05.076Z"
+    },
+    {
+      "email": "ornery-parsnip@tical.fr",
+      "name": "Spotify",
+      "description": "https://spotify.com, androidapp://com.spotify.music",
+      "createdAt": "2025-03-19T07:45:25.936Z",
+      "updatedAt": "2025-09-06T20:56:47.603Z"
+    },
+    {
+      "email": "microscopic-wanderer@tical.fr",
+      "name": "Staterabikes.fr",
+      "description": "https://www.staterabikes.fr",
+      "createdAt": "2025-03-16T22:24:07.606Z",
+      "updatedAt": "2025-03-16T22:24:07.606Z"
+    },
+    {
+      "email": "rash-frog@tical.fr",
+      "name": "Steam",
+      "description": "https://steampowered.com, androidapp://com.valvesoftware.android.steam.community",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2026-04-04T04:49:41.256Z"
+    },
+    {
+      "email": "strava.com@tical.fr",
+      "name": "strava.com",
+      "description": "https://strava.com",
+      "createdAt": "2023-09-10T11:31:38.254Z",
+      "updatedAt": "2023-09-10T11:31:38.254Z"
+    },
+    {
+      "email": "teamviewer.com@20230926.tical.fr",
+      "name": "Teamviewer",
+      "description": "https://teamviewer.com",
+      "createdAt": "2023-09-26T11:30:08.883Z",
+      "updatedAt": "2023-09-26T11:30:24.110Z"
+    },
+    {
+      "email": "timberland.fr@20240112.tical.fr",
+      "name": "timberland.fr",
+      "description": "https://timberland.fr",
+      "createdAt": "2024-01-12T09:14:47.270Z",
+      "updatedAt": "2024-01-12T09:15:11.353Z"
+    },
+    {
+      "email": "lone-blueberry@tical.fr",
+      "name": "Timetree",
+      "description": "https://timetreeapp.com, androidapp://works.jubilee.timetree",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-12-11T09:33:00.623Z"
+    },
+    {
+      "email": "majestical-bay@tical.fr",
+      "name": "Toogoodtogo",
+      "description": "https://www.toogoodtogo.com/fr, androidapp://com.app.tgtg",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2024-06-06T09:47:34.456Z"
+    },
+    {
+      "email": "budget-berry@tical.fr",
+      "name": "Trainline",
+      "description": "https://trainline.fr, https://thetrainline.com, androidapp://com.capitainetrain.android",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2026-05-30T10:58:18.773Z"
+    },
+    {
+      "email": "complicated-mesquite@tical.fr",
+      "name": "Transavia",
+      "description": "https://transavia.com",
+      "createdAt": "2024-05-04T19:39:03.250Z",
+      "updatedAt": "2024-05-04T19:39:37.070Z"
+    },
+    {
+      "email": "ubaldi.com@20231121.tical.fr",
+      "name": "Ubaldi",
+      "description": "http://ubaldi.com",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2023-11-21T12:07:07.466Z"
+    },
+    {
+      "email": "opal-box@tical.fr",
+      "name": "Ui.com",
+      "description": "https://ui.com, androidapp://com.ubnt.unifi.protect",
+      "createdAt": "2024-04-25T16:57:48.316Z",
+      "updatedAt": "2024-04-25T17:06:32.700Z"
+    },
+    {
+      "email": "veepee.fr@20230914.tical.fr",
+      "name": "Vente privee",
+      "description": "https://veepee.fr",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2023-09-14T10:55:06.216Z"
+    },
+    {
+      "email": "cantankerous-zebra@tical.fr",
+      "name": "Veolia",
+      "description": "https://login.eau.veolia.fr",
+      "createdAt": "2023-11-09T21:37:01.863Z",
+      "updatedAt": "2024-10-08T13:44:22.403Z"
+    },
+    {
+      "email": "vintedfr@20230910.tical.fr",
+      "name": "Vinted Gribouille83",
+      "description": "https://vinted.fr",
+      "createdAt": "2023-09-10T12:58:58.290Z",
+      "updatedAt": "2023-09-10T12:59:20.163Z"
+    },
+    {
+      "email": "eminent-buffalo@tical.fr",
+      "name": "Voyage privé",
+      "description": "https://www.voyage-prive.com/login/index#signup",
+      "createdAt": "2025-12-05T20:08:08.206Z",
+      "updatedAt": "2025-12-05T20:08:08.206Z"
+    },
+    {
+      "email": "plump-catoblepas@tical.fr",
+      "name": "Yuka",
+      "description": "androidapp://io.yuka.android",
+      "createdAt": "2025-01-21T09:31:01.396Z",
+      "updatedAt": "2025-01-21T09:38:14.666Z"
+    },
+    {
+      "email": "zalando.com@20231018.tical.fr",
+      "name": "Zalando",
+      "description": "https://zalando.com",
+      "createdAt": "2023-10-18T10:14:10.483Z",
+      "updatedAt": "2023-10-18T10:14:33.733Z"
+    },
+    {
+      "email": "tda25@tical.fr",
+      "name": "Zenith Toulon",
+      "description": "https://zenith-toulon.trium.fr",
+      "createdAt": "2026-02-13T09:07:01.370Z",
+      "updatedAt": "2026-02-13T09:07:01.370Z"
+    },
+    {
+      "email": "descriptive-redbud@tical.fr",
+      "name": "Zooplus",
+      "description": "https://zooplus.fr",
+      "createdAt": "2024-09-21T17:31:40.763Z",
+      "updatedAt": "2024-09-21T17:32:04.333Z"
+    }
+  ],
+  "skipped": [
+    {
+      "email": "Tda25@tical.fr",
+      "name": "Bercy Accor Arena",
+      "description": "https://accorarena.com",
+      "createdAt": "2025-01-24T18:04:33.793Z",
+      "updatedAt": "2025-02-13T18:04:06.863Z"
+    },
+    {
+      "email": "sapphire-morel@tical.fr",
+      "name": "e-hotel MINARM",
+      "description": "https://e-hotel.defense.gouv.fr/connexion",
+      "createdAt": "2024-09-20T08:04:29.156Z",
+      "updatedAt": "2024-09-20T08:04:47.663Z"
+    },
+    {
+      "email": "lacentralefr@tical.fr",
+      "name": "Lacentrale",
+      "description": "https://lacentrale.fr",
+      "createdAt": "2023-09-10T11:31:38.253Z",
+      "updatedAt": "2023-09-10T11:31:38.253Z"
+    },
+    {
+      "email": "iron-jalap@tical.fr",
+      "name": "nicehash.com",
+      "description": "https://www.nicehash.com/my/register",
+      "createdAt": "2024-10-18T14:04:20.516Z",
+      "updatedAt": "2024-10-18T14:04:20.516Z"
+    }
+  ],
+  "statistics": {
+    "updated": 136,
+    "skipped": 4,
+    "errors": 0
+  }
+}

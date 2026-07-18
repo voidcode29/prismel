@@ -1,6 +1,6 @@
 {
   "name": "@prismel/backend",
-  "version": "0.1.0",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,7 +15,6 @@
   "dependencies": {
     "better-sqlite3": "^11.3.0",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.0",
     "drizzle-orm": "^0.45.2",
     "express": "^4.21.0",
     "json5": "^2.2.3",

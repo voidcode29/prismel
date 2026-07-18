@@ -9,16 +9,12 @@ import {
 } from "./validators/alias.validator.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { settingsController } from "./modules/settings/settings.controller.js";
-import { seedOvhFromEnv } from "./providers/ovh/config.js";
 import { getSupportedProviders } from "./providers/registry.js";
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-
-// Seed provider settings from .env on first startup
-seedOvhFromEnv();
 
 // Alias routes
 app.get("/api/aliases", aliasController.getAll);
