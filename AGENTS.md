@@ -73,8 +73,8 @@ Pas de script de build de déploiement local : la production passe par la CI.
 
 Workflow : `.github/workflows/ci.yml`. Container : `node:24-bookworm` (Debian 12, glibc 2.36, identique au VPS).
 
-- Job `test` (push main + PR) : checkout, `jdx/mise-action@v2` (lit `mise.toml`), `npm ci`, typecheck + lint + build
-- Job `deploy` (push main only, après `test`) : build, génère migrations (safety net), assemble `deploy-build/` (backend/dist + public + node_modules prod + migrations), `tar czf prismel-<run-number>.tar.gz`, scp vers VPS, ssh (stop, backup, extract `--exclude="data"`, migrate, start, health check `/api/settings`), upload-artifact (90 jours, fallback rollback)
+- Job `test` (push master + PR) : checkout, `jdx/mise-action@v2` (lit `mise.toml`), `npm ci`, typecheck + lint + build
+- Job `deploy` (push master only, après `test`) : build, génère migrations (safety net), assemble `deploy-build/` (backend/dist + public + node_modules prod + migrations), `tar czf prismel-<run-number>.tar.gz`, scp vers VPS, ssh (stop, backup, extract `--exclude="data"`, migrate, start, health check `/api/settings`), upload-artifact (90 jours, fallback rollback)
 
 Le `run_number` GitHub est un build number monotone. Pas de version sémantique.
 

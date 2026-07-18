@@ -71,7 +71,7 @@ Backend runs on `http://localhost:3001`. Frontend runs on `http://localhost:5173
 
 ## Production deployment
 
-Deployment is fully automated via GitHub Actions. Every push to `main` triggers CI: tests run, and on success the archive is built (in a `node:24-bookworm` container matching the VPS glibc), scp'd to the server, extracted, migrations applied, and the systemd service restarted. A health check verifies the service is up; the run fails if the backend crashes.
+Deployment is fully automated via GitHub Actions. Every push to `master` triggers CI: tests run, and on success the archive is built (in a `node:24-bookworm` container matching the VPS glibc), scp'd to the server, extracted, migrations applied, and the systemd service restarted. A health check verifies the service is up; the run fails if the backend crashes.
 
 ### Build pipeline
 
