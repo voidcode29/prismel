@@ -41,12 +41,13 @@ jobs:
         run: |
           ROOT="$GITHUB_WORKSPACE"
           BUILD_DIR="$ROOT/deploy-build"
-          mkdir -p "$BUILD_DIR"/{backend/dist,public,data}
+          mkdir -p "$BUILD_DIR/backend/dist" "$BUILD_DIR/public" "$BUILD_DIR/data"
 
           cp "$ROOT/package.json" "$ROOT/package-lock.json" "$BUILD_DIR/"
           cp -r "$ROOT/backend/dist"/* "$BUILD_DIR/backend/dist/"
           cp "$ROOT/backend/package.json" "$ROOT/backend/drizzle.config.ts" "$BUILD_DIR/backend/"
           if [ -d "$ROOT/backend/src/db/migrations" ]; then
+            mkdir -p "$BUILD_DIR/backend/dist/db"
             cp -r "$ROOT/backend/src/db/migrations" "$BUILD_DIR/backend/dist/db/"
           fi
           cp -r "$ROOT/frontend/dist"/* "$BUILD_DIR/public/"
