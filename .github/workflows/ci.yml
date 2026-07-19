@@ -68,11 +68,11 @@ jobs:
           mkdir -p "$SSH_DIR"
           echo "$VPS_SSH_KEY" > "$SSH_DIR/deploy_key"
           chmod 600 "$SSH_DIR/deploy_key"
-          printf '%s\n' "$VPS_KNOWN_HOSTS" > "$SSH_DIR/known_hosts"
+          printf '%s\n' "$VPS_KNOWN_HOSTS" | tr -d '\r' > "$SSH_DIR/known_hosts"
 
           if [ ! -s "$SSH_DIR/known_hosts" ]; then
             echo "ERROR: VPS_KNOWN_HOSTS secret is empty or not set."
-            echo "Run: ssh-keyscan -H -p <port> <host> > vps_known_hosts.txt"
+            echo "Run: ssh-keyscan -p <port> <host> 2>/dev/null > vps_known_hosts.txt"
             echo "Then add it as a GitHub Actions secret."
             exit 1
           fi
@@ -92,8 +92,6 @@ jobs:
           sudo systemctl stop prismel
           tar czf "/tmp/prismel-backup-$(date +%s).tar.gz" --exclude="data" .
           tar xzf "/tmp/prismel-$run_number.tar.gz" -C /opt/prismel/ --exclude="data"
-          chown -R githubdeploy:prismel-data /opt/prismel/.
-          chown prismel:prismel-data /opt/prismel/data
           if [ -f backend/dist/db/migrate.js ]; then
             node backend/dist/db/migrate.js
           fi
@@ -107,3 +105,44 @@ jobs:
         with:
           name: prismel-${{ github.run_number }}
           path: prismel-${{ github.run_number }}.tar.gz
+
+  ssh-debug:
+    needs: test
+    if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    container: node:24-bookworm
+    continue-on-error: true
+    env:
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+      VPS_PORT: ${{ secrets.VPS_PORT }}
+      VPS_USER: ${{ secrets.VPS_USER }}
+      VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+      VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+    steps:
+      - name: Debug SSH setup
+        run: |
+          SSH_DIR="/tmp/ssh-deploy"
+          mkdir -p "$SSH_DIR"
+          echo "$VPS_SSH_KEY" > "$SSH_DIR/deploy_key"
+          chmod 600 "$SSH_DIR/deploy_key"
+          printf '%s\n' "$VPS_KNOWN_HOSTS" | tr -d '\r' > "$SSH_DIR/known_hosts"
+          chmod 644 "$SSH_DIR/known_hosts"
+
+          echo "=== known_hosts (first 60 chars per line) ==="
+          cut -c1-60 "$SSH_DIR/known_hosts"
+          echo "=== line count / byte size ==="
+          wc -l "$SSH_DIR/known_hosts"
+          wc -c "$SSH_DIR/known_hosts"
+          echo "=== VPS_HOST ==="
+          echo "VPS_HOST='$VPS_HOST' (length=${#VPS_HOST})"
+          echo "=== files in SSH_DIR ==="
+          ls -la "$SSH_DIR/"
+          echo "=== ssh -vv dry-run ==="
+          ssh -vv -i "$SSH_DIR/deploy_key" \
+            -o UserKnownHostsFile="$SSH_DIR/known_hosts" \
+            -o IdentitiesOnly=yes \
+            -o BatchMode=yes \
+            -o ConnectTimeout=10 \
+            -p "${VPS_PORT:-22}" \
+            "$VPS_USER@$VPS_HOST" \
+            "echo CONNECTION_OK; whoami; hostname" 2>&1 || echo "SSH exit code: $?"

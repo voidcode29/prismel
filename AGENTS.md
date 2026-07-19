@@ -80,6 +80,8 @@ Le `run_number` GitHub est un build number monotone. Pas de version sémantique.
 
 Secrets requis : `VPS_HOST`, `VPS_PORT` (optionnel), `VPS_USER` (`githubdeploy`), `VPS_SSH_KEY` (ed25519 dédiée), `VPS_KNOWN_HOSTS` (résultat de `ssh-keyscan`). Voir README pour le setup VPS one-shot (deux users `prismel` + `githubdeploy` + groupe `prismel-data`, systemd service avec directives hardening, `Environment=PORT=3001` inline, pas de `.env`).
 
+Note permissions : `/opt/prismel/` doit être en 755 (pas 750) pour que l'user runtime `prismel` puisse traverser le dossier et exécuter le code. `prismel` n'écrit pas dans le code (pas de `w` pour others), seulement `r` + `x`. La CI n'effectue aucun `chown` post-extract : le setup one-shot en root pose les permissions initiales, et `tar xzf --exclude="data"` préserve la propriété existante du dossier `data/`. Les autres fichiers extraits sont créés en `githubdeploy:githubdeploy` (propriétaire du dossier cible).
+
 ## Gotchas ESM
 
 Le backend a `"type": "module"` dans `package.json`. Node.js ESM exige les extensions `.js` explicites sur tous les imports relatifs.

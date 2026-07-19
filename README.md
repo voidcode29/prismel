@@ -113,7 +113,10 @@ sudo chmod 440 /etc/sudoers.d/prismel-deploy
 sudo mkdir -p /opt/prismel/data
 sudo chown -R githubdeploy:githubdeploy /opt/prismel
 sudo chown prismel:prismel-data /opt/prismel/data
-sudo chmod 750 /opt/prismel
+# /opt/prismel must be 755 (not 750) so the prismel runtime user can traverse
+# into the directory and read the code (needs 'r' and 'x' for "others").
+# prismel never writes here (no 'w' for others), only reads + executes.
+sudo chmod 755 /opt/prismel
 sudo chmod 770 /opt/prismel/data
 ```
 
