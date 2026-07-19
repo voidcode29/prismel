@@ -13,6 +13,9 @@ import { getSupportedProviders } from "./providers/registry.js";
 
 const app = express();
 
+// Health check (must not depend on any module)
+app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
+
 app.use(cors());
 app.use(express.json());
 

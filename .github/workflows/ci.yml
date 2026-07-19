@@ -96,8 +96,17 @@ jobs:
             node backend/dist/db/migrate.js
           fi
           sudo systemctl start prismel
-          sleep 3
-          curl -fsS http://localhost:3001/api/settings > /dev/null
+          sleep 5
+          curl -fsSv http://localhost:3001/api/health > /dev/null || {
+            echo "=== HEALTH CHECK FAILED ==="
+            echo "=== systemctl status ==="
+            sudo systemctl is-active prismel || true
+            echo "=== journalctl last 30 lines ==="
+            sudo journalctl -u prismel --no-pager -n 30 || true
+            echo "=== listening on port 3001 ==="
+            ss -tlnp | grep 3001 || true
+            exit 1
+          }
           rm "/tmp/prismel-$run_number.tar.gz"
           REMOTE
 
