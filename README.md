@@ -152,7 +152,7 @@ Type=simple
 User=prismel
 Group=prismel-data
 WorkingDirectory=/opt/prismel
-Environment=PORT=3001
+Environment=PORT=3002
 ExecStart=/usr/bin/node backend/dist/index.js
 Restart=on-failure
 RestartSec=3
@@ -185,7 +185,7 @@ server {
     try_files $uri $uri/ /index.html;
 
     location /api/ {
-        proxy_pass http://127.0.0.1:3001;
+        proxy_pass http://127.0.0.1:3002;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';

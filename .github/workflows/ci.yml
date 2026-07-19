@@ -97,7 +97,7 @@ jobs:
           fi
           sudo systemctl start prismel
           sleep 5
-          curl -fsSv http://localhost:3001/api/health > /dev/null || {
+          curl -fsSv http://localhost:3002/api/health > /dev/null || {
             echo "=== HEALTH CHECK FAILED ==="
             echo "=== systemctl status ==="
             sudo systemctl is-active prismel || true
