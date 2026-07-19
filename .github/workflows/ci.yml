@@ -60,21 +60,30 @@ jobs:
 
           (cd "$BUILD_DIR" && tar czf "$ROOT/prismel-$RUN_NUMBER.tar.gz" .)
 
-      - name: Setup SSH
+      - name: Setup SSH and deploy to VPS
+        env:
+          SSH_AUTH_SOCK: ""
         run: |
-          mkdir -p ~/.ssh
-          echo "$VPS_SSH_KEY" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          printf '%s\n' "$VPS_KNOWN_HOSTS" >> ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
+          SSH_DIR="/tmp/ssh-deploy"
+          mkdir -p "$SSH_DIR"
+          echo "$VPS_SSH_KEY" > "$SSH_DIR/deploy_key"
+          chmod 600 "$SSH_DIR/deploy_key"
+          printf '%s\n' "$VPS_KNOWN_HOSTS" > "$SSH_DIR/known_hosts"
 
-      - name: Deploy to VPS
-        run: |
-          scp -i ~/.ssh/deploy_key -P "${VPS_PORT:-22}" \
+          if [ ! -s "$SSH_DIR/known_hosts" ]; then
+            echo "ERROR: VPS_KNOWN_HOSTS secret is empty or not set."
+            echo "Run: ssh-keyscan -H -p <port> <host> > vps_known_hosts.txt"
+            echo "Then add it as a GitHub Actions secret."
+            exit 1
+          fi
+
+          SSH_OPTS="-i $SSH_DIR/deploy_key -o UserKnownHostsFile=$SSH_DIR/known_hosts -o IdentitiesOnly=yes"
+
+          scp $SSH_OPTS -P "${VPS_PORT:-22}" \
             prismel-$RUN_NUMBER.tar.gz \
             "$VPS_USER@$VPS_HOST:/tmp/"
 
-          ssh -i ~/.ssh/deploy_key -p "${VPS_PORT:-22}" \
+          ssh $SSH_OPTS -p "${VPS_PORT:-22}" \
             "$VPS_USER@$VPS_HOST" \
             "bash -s -- $RUN_NUMBER" << 'REMOTE'
           set -euo pipefail
