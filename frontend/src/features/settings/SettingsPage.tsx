@@ -24,6 +24,8 @@ export function SettingsPage() {
   const [redirectTargets, setRedirectTargets] = useState("");
   const [domainPairs, setDomainPairs] = useState<{ domain: string; provider: string }[]>([]);
   const [selectedProvider, setSelectedProvider] = useState("");
+  const [testing, setTesting] = useState(false);
+  const [testResult, setTestResult] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const [providerList, setProviderList] = useState<string[]>([]);
 
   useEffect(() => {
@@ -95,6 +97,33 @@ export function SettingsPage() {
       setMessage({ type: "error", text: e instanceof Error ? e.message : "Save failed" });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleTestConnection = async () => {
+    setTesting(true);
+    setTestResult(null);
+    try {
+      const res = await fetch("/api/settings/test-connection", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ovh_endpoint: settings.ovh_endpoint,
+          ovh_application_key: settings.ovh_application_key,
+          ovh_application_secret: settings.ovh_application_secret,
+          ovh_consumer_key: settings.ovh_consumer_key,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setTestResult({ type: "success", text: "Connection successful" });
+      } else {
+        setTestResult({ type: "error", text: data.error || "Connection failed" });
+      }
+    } catch {
+      setTestResult({ type: "error", text: "Connection test failed" });
+    } finally {
+      setTesting(false);
     }
   };
 
@@ -215,7 +244,7 @@ export function SettingsPage() {
               <label className="block text-sm font-semibold text-solaris-700 dark:text-solaris-300 mb-2">Provider</label>
               <select
                 value={selectedProvider}
-                onChange={(e) => setSelectedProvider(e.target.value)}
+                onChange={(e) => { setSelectedProvider(e.target.value); setTestResult(null); }}
                 className="w-full px-4 py-2.5 bg-solaris-50 dark:bg-solaris-950 border border-solaris-300 dark:border-solaris-700 rounded-xl text-sm text-solaris-700 dark:text-solaris-300 focus:ring-2 focus:ring-solaris-blue-400 outline-none"
               >
                 <option value="">Select a provider</option>
@@ -226,6 +255,41 @@ export function SettingsPage() {
             </div>
 
             {SelectedForm && <SelectedForm settings={settings} onChange={handleChange} />}
+
+            {selectedProvider && SelectedForm && (
+              <div className="mt-3">
+                <button
+                  type="button"
+                  onClick={handleTestConnection}
+                  disabled={testing}
+                  className="px-4 py-2 text-sm font-medium text-solaris-blue-600 dark:text-solaris-blue-300 border border-solaris-blue-300 dark:border-solaris-blue-700 rounded-lg hover:bg-solaris-blue-50 dark:hover:bg-solaris-blue-900/30 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  {testing ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Testing...
+                    </>
+                  ) : (
+                    "Test Connection"
+                  )}
+                </button>
+              </div>
+            )}
+
+            {testResult && (
+              <div className={`mt-2 rounded-lg p-3 flex items-start gap-2 text-sm ${
+                testResult.type === "success"
+                  ? "bg-solaris-green-50 dark:bg-solaris-green-900/30 border border-solaris-green-200 dark:border-solaris-green-800 text-solaris-green-600 dark:text-solaris-green-200"
+                  : "bg-solaris-red-50 dark:bg-solaris-red-900/30 border border-solaris-red-200 dark:border-solaris-red-800 text-solaris-red-600 dark:text-solaris-red-200"
+              }`}>
+                {testResult.type === "success" ? (
+                  <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                ) : (
+                  <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                )}
+                <span>{testResult.text}</span>
+              </div>
+            )}
 
             {selectedProvider && !SelectedForm && (
               <div className="mt-4">

@@ -51,8 +51,22 @@ export class OvhClient {
         signal: controller.signal,
       });
 
+      const contentType = response.headers.get("content-type") ?? "";
+      if (contentType.includes("text/html")) {
+        throw new OvhApiError(
+          response.status,
+          "The OVH API endpoint returned HTML instead of JSON. Check the 'ovh_endpoint' setting — it should be 'eu.api.ovh.com' (without https:// or /1.0)."
+        );
+      }
+
       if (!response.ok) {
         const error = await response.text();
+        if (error.startsWith("<!DOCTYPE html") || error.startsWith("<html")) {
+          throw new OvhApiError(
+            response.status,
+            "The OVH API endpoint returned HTML instead of JSON. Check the 'ovh_endpoint' setting — it should be 'eu.api.ovh.com' (without https:// or /1.0)."
+          );
+        }
         throw new OvhApiError(response.status, error);
       }
 
@@ -60,5 +74,58 @@ export class OvhClient {
     } finally {
       clearTimeout(timer);
     }
+  }
+
+  static async test(): Promise<{ success: true }> {
+    const client = new OvhClient();
+    const cfg = getOvhConfig();
+    const timestamp = Math.floor(Date.now() / 1000).toString();
+    const signature = client.sign("GET", "/me", "");
+    const response = await fetch(`${client.baseUrl}/me`, {
+      headers: {
+        "Content-Type": "application/json",
+        "X-Ovh-Application": cfg.applicationKey,
+        "X-Ovh-Timestamp": timestamp,
+        "X-Ovh-Signature": signature,
+        "X-Ovh-Consumer": cfg.consumerKey,
+      },
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!response.ok) {
+      const body = await response.text();
+      throw new OvhApiError(response.status, body);
+    }
+    return { success: true };
+  }
+
+  static async testWith(config: {
+    endpoint: string;
+    applicationKey: string;
+    applicationSecret: string;
+    consumerKey: string;
+  }): Promise<{ success: true }> {
+    const baseUrl = `https://${config.endpoint}/1.0`;
+    const timestamp = Math.floor(Date.now() / 1000).toString();
+    const signature = crypto
+      .createHash("sha1")
+      .update(
+        `${config.applicationSecret}+${config.consumerKey}+GET+${baseUrl}/me++${timestamp}`
+      )
+      .digest("hex");
+    const response = await fetch(`${baseUrl}/me`, {
+      headers: {
+        "Content-Type": "application/json",
+        "X-Ovh-Application": config.applicationKey,
+        "X-Ovh-Timestamp": timestamp,
+        "X-Ovh-Signature": `$1$${signature}`,
+        "X-Ovh-Consumer": config.consumerKey,
+      },
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!response.ok) {
+      const body = await response.text();
+      throw new OvhApiError(response.status, body);
+    }
+    return { success: true };
   }
 }

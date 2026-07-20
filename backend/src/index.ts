@@ -31,6 +31,7 @@ app.post("/api/aliases/sync", aliasController.sync);
 // Settings routes
 app.get("/api/settings", settingsController.getAll);
 app.put("/api/settings", settingsController.update);
+app.post("/api/settings/test-connection", settingsController.testConnection);
 
 // Provider routes
 app.get("/api/settings/providers", (_req, res) => {
