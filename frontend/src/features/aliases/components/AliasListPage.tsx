@@ -195,9 +195,18 @@ export function AliasListPage() {
     }
   };
 
-  const handleCopy = (e: React.MouseEvent, email: string, id: string) => {
+  const handleCopy = async (e: React.MouseEvent, email: string, id: string) => {
     e.stopPropagation();
-    navigator.clipboard.writeText(email);
+    try {
+      await navigator.clipboard.writeText(email);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = email;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };
