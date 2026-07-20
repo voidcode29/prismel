@@ -4,8 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-solaris-50 text-solaris-600 antialiased;
-    @apply dark:bg-solaris-950 dark:text-solaris-400;
+    @apply bg-solaris-50 dark:bg-solaris-950 text-solaris-600 dark:text-solaris-400 antialiased;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
 }

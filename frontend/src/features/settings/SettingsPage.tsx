@@ -7,10 +7,12 @@ import {
   Loader2,
   Mail,
   Globe,
+  Palette,
   Plus,
   Trash2,
 } from "lucide-react";
 import { getProviderForm } from "../../providers/registry";
+import { ThemePicker } from "../../components/ThemePicker";
 
 interface SettingsData {
   [key: string]: string;
@@ -317,8 +319,26 @@ export function SettingsPage() {
           </button>
         </div>
 
-        {/* Right Column: Redirect Targets */}
-        <div>
+        {/* Right Column */}
+        <div className="space-y-6">
+          {/* UI */}
+          <div className="bg-white dark:bg-solaris-900 rounded-xl border border-solaris-200 dark:border-solaris-800 shadow-sm p-6">
+            <div className="flex items-center gap-3 pb-4 border-b border-solaris-100 dark:border-solaris-800">
+              <div className="w-10 h-10 bg-solaris-violet-50 dark:bg-solaris-violet-900/30 rounded-lg flex items-center justify-center">
+                <Palette className="w-5 h-5 text-solaris-violet-500 dark:text-solaris-violet-300" />
+              </div>
+              <div>
+                <h2 className="text-base font-semibold text-solaris-900 dark:text-solaris-50">UI</h2>
+                <p className="text-xs text-solaris-500 dark:text-solaris-400">Appearance and theme</p>
+              </div>
+            </div>
+            <div className="mt-4">
+              <h3 className="text-sm font-semibold text-solaris-700 dark:text-solaris-300 mb-3">Thème</h3>
+              <ThemePicker />
+            </div>
+          </div>
+
+          {/* Redirect Targets */}
           <div className="bg-white dark:bg-solaris-900 rounded-xl border border-solaris-200 dark:border-solaris-800 shadow-sm p-6">
             <div className="flex items-center gap-3 pb-4 border-b border-solaris-100 dark:border-solaris-800">
               <div className="w-10 h-10 bg-solaris-blue-50 dark:bg-solaris-blue-900/30 rounded-lg flex items-center justify-center">
