@@ -1,10 +1,11 @@
+import { useState } from "react";
 import { Routes, Route, Link, useLocation } from "react-router-dom";
-import { Logo } from "./components/Logo";
 import { ThemeToggle } from "./components/ThemeToggle";
 import { AliasListPage } from "./features/aliases/components/AliasListPage";
 import { SyncPage } from "./features/aliases/components/SyncPage";
 import { SettingsPage } from "./features/settings/SettingsPage";
 import { SyncProvider } from "./features/aliases/SyncContext";
+import { AboutModal } from "./features/about/AboutModal";
 
 function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
   const location = useLocation();
@@ -24,18 +25,25 @@ function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
 }
 
 export function App() {
+  const [aboutOpen, setAboutOpen] = useState(false);
   return (
     <div className="min-h-screen bg-solaris-50 dark:bg-solaris-950 text-solaris-900 dark:text-solaris-50">
       <header className="bg-white dark:bg-solaris-900 border-b border-solaris-200 dark:border-solaris-800 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Logo className="w-9 h-9" />
+            <img src="/icon.png" alt="Prismel" className="w-16 h-16" />
             <span className="text-xl font-bold tracking-tight text-solaris-900 dark:text-solaris-50">Prismel</span>
           </div>
           <nav className="hidden md:flex items-center gap-1 text-sm font-medium">
             <NavLink to="/">Aliases</NavLink>
             <NavLink to="/sync">Sync</NavLink>
             <NavLink to="/settings">Settings</NavLink>
+            <button
+              onClick={() => setAboutOpen(true)}
+              className="px-3 py-1.5 text-sm font-medium text-solaris-500 dark:text-solaris-400 hover:text-solaris-700 dark:hover:text-solaris-200 hover:bg-solaris-100 dark:hover:bg-solaris-800 rounded-lg transition-colors"
+            >
+              About
+            </button>
           </nav>
           <div className="flex items-center gap-3">
             <ThemeToggle />
@@ -53,6 +61,7 @@ export function App() {
           </Routes>
         </SyncProvider>
       </main>
+      <AboutModal open={aboutOpen} onClose={() => setAboutOpen(false)} />
     </div>
   );
 }

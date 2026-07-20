@@ -28,6 +28,8 @@ jobs:
       - run: npm run typecheck --workspaces --if-present
       - run: npm run lint --workspaces --if-present
       - run: npm run build --workspaces --if-present
+        env:
+          VITE_BUILD_NUMBER: ${{ github.run_number }}
 
   deploy:
     needs: test
@@ -46,6 +48,8 @@ jobs:
       - uses: jdx/mise-action@v2
       - run: npm ci
       - run: npm run build --workspaces --if-present
+        env:
+          VITE_BUILD_NUMBER: ${{ github.run_number }}
       - run: npm run db:generate -w @prismel/backend
         continue-on-error: true
 
