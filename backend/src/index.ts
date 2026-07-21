@@ -10,6 +10,7 @@ import {
 import { errorHandler } from "./middleware/errorHandler.js";
 import { settingsController } from "./modules/settings/settings.controller.js";
 import { getSupportedProviders } from "./providers/registry.js";
+import { sqlite } from "./db/index.js";
 
 const app = express();
 
@@ -41,6 +42,25 @@ app.get("/api/settings/providers", (_req, res) => {
 // Error handler
 app.use(errorHandler);
 
-app.listen(config.port, () => {
+const server = app.listen(config.port, () => {
   console.log(`Backend running on http://localhost:${config.port}`);
 });
+
+function shutdown(signal: string) {
+  console.log(`Received ${signal}, shutting down gracefully...`);
+  server.close(() => {
+    console.log("HTTP server closed");
+    sqlite.pragma("wal_checkpoint(TRUNCATE)");
+    sqlite.close();
+    console.log("Database closed");
+    process.exit(0);
+  });
+  // Force exit after 10s if server.close() hangs
+  setTimeout(() => {
+    console.error("Forced shutdown after timeout");
+    process.exit(1);
+  }, 10_000).unref();
+}
+
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));

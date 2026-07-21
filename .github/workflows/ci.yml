@@ -109,6 +109,7 @@ jobs:
           tar czf "/tmp/prismel-backup-$(date +%s).tar.gz" --exclude="data" .
           ls -t /tmp/prismel-backup-*.tar.gz 2>/dev/null | tail -n +4 | xargs -r rm
           tar xzf "/tmp/prismel-$run_number.tar.gz" -C /opt/prismel/ --exclude="data"
+          rm -f /opt/prismel/data/prismel.db-wal /opt/prismel/data/prismel.db-shm
           if [ -f backend/dist/db/migrate.js ]; then
             node backend/dist/db/migrate.js
           fi
