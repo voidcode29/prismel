@@ -4,7 +4,12 @@ import * as schema from "./schema.js";
 import { resolve } from "path";
 
 const dbPath = resolve(import.meta.dirname, "../../../data/prismel.db");
-export const sqlite: Database = new Database(dbPath);
+const sqlite = new Database(dbPath);
 sqlite.pragma("journal_mode = WAL");
 
 export const db = drizzle(sqlite, { schema });
+
+export function closeDb() {
+  sqlite.pragma("wal_checkpoint(TRUNCATE)");
+  sqlite.close();
+}

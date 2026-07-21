@@ -10,7 +10,7 @@ import {
 import { errorHandler } from "./middleware/errorHandler.js";
 import { settingsController } from "./modules/settings/settings.controller.js";
 import { getSupportedProviders } from "./providers/registry.js";
-import { sqlite } from "./db/index.js";
+import { closeDb } from "./db/index.js";
 
 const app = express();
 
@@ -50,8 +50,7 @@ function shutdown(signal: string) {
   console.log(`Received ${signal}, shutting down gracefully...`);
   server.close(() => {
     console.log("HTTP server closed");
-    sqlite.pragma("wal_checkpoint(TRUNCATE)");
-    sqlite.close();
+    closeDb();
     console.log("Database closed");
     process.exit(0);
   });
