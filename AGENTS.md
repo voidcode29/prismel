@@ -102,6 +102,8 @@ Le backend a `"type": "module"` dans `package.json`. Node.js ESM exige les exten
 
 - **Migrations** : générées par le développeur en local via `npm run db:generate`, puis committées dans `backend/src/db/migrations/`. La CI régénère en safety net (`continue-on-error: true`) mais ne commit pas. Si le schéma est modifié sans regeneration locale, le run CI passe mais la prochaine migration est vide.
 
+- **DB dev → prod** : ne jamais copier un `prismel.db` de dev vers la production. Les tables dev sont créées par `db:push` (sans `__drizzle_migrations`), les tables prod sont créées par `migrate()` (avec tracking). Un DB dev copié en prod cassera les futurs deploys : `migrate()` tentera de recréer des tables existantes. Si le DB prod est vierge, le premier `migrate()` crée tout proprement depuis les migrations.
+
 - **Convention ESM** : angular le résolveur d'imports relatifs du backend exige `.js`, pas d'enforcement à la compilation. Revoir cette section si une nouvelle page de code échoue mystérieusement au runtime avec `ERR_MODULE_NOT_FOUND`.
 
 ## Self-update
